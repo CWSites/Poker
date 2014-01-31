@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Angular/Firebase Poker</title>
+
+	<!-- Bootstrap -->
+	<link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="poker-template.css" rel="stylesheet">
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+
+	<script src='https://cdn.firebase.com/v0/firebase.js'></script>
+
+  </head>
+  <body>
+	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	  <div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">Angular/Firebase Poker</a>
+		</div>
+		<div class="collapse navbar-collapse">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="#">Home</a></li>
+				<li><a href="#rules">Rules</a></li>
+				<li><a href="#leaderboard">Leaderboard</a></li>
+				<li><a href="#register">Register</a></li>
+			</ul>
+		</div><!--/.nav-collapse -->
+	  </div>
+	</div>
+
+	<div class="container">
+
+		<div class="starter-template">
+			<h1>Let's Play!</h1>
+			<p class="lead">The rules are simple, No Limit Texas Hold'em</p>
+
+			<div class="pokerRoom">
+				<div class="pokerTable center-block">
+					<ol class="pokerCards center-block list-unstyled list-inline">
+						<li>A<i class="icon heart"></i></li>
+						<li>K<i class="icon heart"></i></li>
+						<li>Q<i class="icon heart"></i></li>
+						<li>J<i class="icon heart"></i></li>
+						<li>10<i class="icon heart"></i></li>
+					</ol>
+					<div class="pokerPot">$1,000<i class="icon coins"></i></div>
+				</div><!-- End Poker Table -->
+				<ol class="pokerPlayers list-unstyled list-inline center-block">
+					<li class="playerOne dealerButton">
+						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+						<span class="name">Player One</span>
+						<span class="chips">$5,000<i class="icon coins"></i></span>
+						<span class="bet">$100<i class="icon coins"></i></span>
+					</li>
+					<li class="playerTwo smallBlind">
+						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+						<span class="name">Player Two</span>
+						<span class="chips">$5,000<i class="icon coins"></i></span>
+						<span class="bet">$100<i class="icon coins"></i></span>
+					</li>
+					<li class="playerThree bigBlind">
+						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+						<span class="name">Player Three</span>
+						<span class="chips">$5,000<i class="icon coins"></i></span>
+						<span class="bet">$100<i class="icon coins"></i></span>
+					</li>
+					<li class="playerFour firstAct">
+						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+						<span class="name">Player Four</span>
+						<span class="chips">$5,000<i class="icon coins"></i></span>
+						<span class="bet">$100<i class="icon coins"></i></span>
+					</li>
+					<li class="playerFive currentPlayer">
+						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+						<span class="name">Player Five</span>
+						<span class="chips">$5,000<i class="icon coins"></i></span>
+						<span class="bet">$100<i class="icon coins"></i></span>
+					</li>
+					<li class="playerSix">
+						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+						<span class="name">Player Six</span>
+						<span class="chips">$5,000<i class="icon coins"></i></span>
+						<span class="bet">$100<i class="icon coins"></i></span>
+					</li>
+					<li class="playerSeven">
+						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+						<span class="name">Player Seven</span>
+						<span class="chips">$5,000<i class="icon coins"></i></span>
+						<span class="bet">$100<i class="icon coins"></i></span>
+					</li>
+					<li class="playerEight">
+						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+						<span class="name">Player Eight</span>
+						<span class="chips">$5,000<i class="icon coins"></i></span>
+						<span class="bet">$100<i class="icon coins"></i></span>
+					</li>
+					<li class="playerNine">
+						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+						<span class="name">Player Nine</span>
+						<span class="chips">$5,000<i class="icon coins"></i></span>
+						<span class="bet">$100<i class="icon coins"></i></span>
+					</li>
+				</ol>
+				<div class="pokerCards myHand center-block">
+					<ol>
+						<li>9<i class="icon heart"></i></li>
+						<li>8<i class="icon heart"></i></li>
+					</ol>
+				</div>
+				<div class="pokerController pull-right">
+					<button type="button" class="btn btn-primary" disabled="disabled">Check</button>
+					<button type="button" class="btn btn-success" disabled="disabled">Bet</button>
+					<button type="button" class="btn btn-success">Call</button>
+					<button type="button" class="btn btn-warning">Raise</button>
+					<button type="button" class="btn btn-danger">Fold</button>
+				</div>
+			</div><!-- End Poker Room -->
+
+		</div>
+
+	</div><!-- /.container -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="https://code.jquery.com/jquery.js"></script>
+	<script src="bootstrap/dist/js/bootstrap.min.js"></script>
+  </body>
+</html>
