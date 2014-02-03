@@ -4,16 +4,17 @@
 }
 .pokerRoom {
   background: #555555;
-  padding: 50px;
+  padding: 20px 50px;
   height: 100%;
 }
 .pokerTable {
   width: 800px;
-  height: 300px;
+  height: 350px;
   background: #5cb85c;
-  border-radius: 150px;
+  border-radius: 175px;
   text-align: center;
   padding: 100px 0 0;
+  margin-top: 75px;
   border: 10px solid #43290e;
 }
 .pokerCards {
@@ -29,11 +30,30 @@
   margin: 0 2%;
   font-size: 1.5em;
 }
-.pokerCards .icon {
-  margin-left: 2px;
+.pokerCards.myHand .symbol {
+  height: 16px;
+  width: 16px;
+  background-size: 16px;
 }
-.pokerCards .icon.heart {
-  color: #d9534f;
+.pokerCards .symbol {
+  margin-left: 2px;
+  height: 12px;
+  width: 12px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: 12px;
+}
+.pokerCards .symbol.heart {
+  background-image: url('../../img/heart.png');
+}
+.pokerCards .symbol.diamond {
+  background-image: url('../../img/diamond.png');
+}
+.pokerCards .symbol.spade {
+  background-image: url('../../img/spade.png');
+}
+.pokerCards .symbol.club {
+  background-image: url('../../img/club.png');
 }
 .pokerCards ol {
   padding: 0;
@@ -57,41 +77,155 @@
 }
 .pokerPlayers {
   width: 800px;
-  height: 100px;
+  height: 350px;
+  position: relative;
+  margin: -350px auto 100px;
 }
 .pokerPlayers li {
-  position: relative;
-  margin: 0 45px;
-  top: -145px;
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  width: 160px;
+  height: 110px;
+  text-align: center;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.pokerPlayers li.me img {
+  border-color: black;
+}
+.pokerPlayers li.winner {
+  color: #428bca;
+  text-shadow: none;
+}
+.pokerPlayers li.winner img {
+  border-color: #428bca;
+}
+.pokerPlayers li.currentPlayer {
+  color: #f0ad4e;
+}
+.pokerPlayers li.currentPlayer img {
+  border-color: #f0ad4e;
+}
+.pokerPlayers li.dealerButton .name:after {
+  content: "D";
+  background: #eee;
+  color: black;
+  font-weight: bold;
+  border-radius: 50%;
+  margin-left: 5px;
+  font-size: 10px;
+  text-shadow: none;
+  padding: 3px 6px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+.pokerPlayers li.folded .name,
+.pokerPlayers li.folded .chips {
+  opacity: .5;
+}
+.pokerPlayers li.empty {
+  display: none;
 }
 .pokerPlayers li:nth-child(2),
 .pokerPlayers li:nth-child(3),
 .pokerPlayers li:nth-child(4) {
-  top: -325px;
+  top: -40px;
+}
+.pokerPlayers li:nth-child(7),
+.pokerPlayers li:nth-child(8),
+.pokerPlayers li:nth-child(9) {
+  bottom: -40px;
+}
+.pokerPlayers li:nth-child(1),
+.pokerPlayers li:nth-child(5),
+.pokerPlayers li:nth-child(6),
+.pokerPlayers li:nth-child(10) {
+  height: 60px;
+}
+.pokerPlayers li:nth-child(2),
+.pokerPlayers li:nth-child(7) {
+  left: 160px;
+}
+.pokerPlayers li:nth-child(3),
+.pokerPlayers li:nth-child(8) {
+  left: 320px;
+}
+.pokerPlayers li:nth-child(4),
+.pokerPlayers li:nth-child(9) {
+  left: 480px;
 }
 .pokerPlayers li:nth-child(1),
 .pokerPlayers li:nth-child(5) {
-  top: -225px;
+  top: 95px;
 }
-.pokerPlayers li:nth-child(1) {
-  left: -15px;
-  margin-left: 0;
+.pokerPlayers li:nth-child(6),
+.pokerPlayers li:nth-child(10) {
+  bottom: 95px;
 }
-.pokerPlayers li:nth-child(5) {
-  right: -50px;
-  margin-right: 0;
-}
+.pokerPlayers li:nth-child(1),
 .pokerPlayers li:nth-child(6) {
-  margin-left: 105px;
+  left: -35px;
+  text-align: left;
+}
+.pokerPlayers li:nth-child(1) img,
+.pokerPlayers li:nth-child(6) img {
+  float: left;
+}
+.pokerPlayers li:nth-child(5),
+.pokerPlayers li:nth-child(10) {
+  right: -35px;
+  text-align: right;
+}
+.pokerPlayers li:nth-child(5) img,
+.pokerPlayers li:nth-child(10) img {
+  float: right;
+}
+.pokerPlayers .bet {
+  color: black;
+  text-shadow: none;
+}
+.pokerPlayers .chips {
+  color: white;
 }
 .pokerPlayers img {
   width: 50px;
   height: 50px;
+  margin: 3px 10px;
   border: 3px solid white;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 .pokerPlayers span {
   display: block;
+  height: 17px;
+}
+form label {
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+.notice {
+  padding: 10px;
+  border-radius: 4px;
+  opacity: 0;
+}
+.notice .timer {
+  font-weight: bold;
+}
+.myTurn .notice {
+  opacity: 1;
+}
+.chatRoom {
+  width: 100%;
+  height: 105px;
+  margin-bottom: 10px;
+  background: white;
+  border-radius: 4px;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
+}
+.pokerChat .col-sm-9 {
+  padding-left: 0;
 }
 i.icon.coins {
   color: #f0ad4e;

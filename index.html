@@ -51,85 +51,117 @@
 			<h1>Let's Play!</h1>
 			<p class="lead">The rules are simple, No Limit Texas Hold'em</p>
 
-			<div class="pokerRoom">
+			<div class="pokerRoom myTurn">
+				<p class="notice bg-warning">
+					It's your turn
+					<span class="timer pull-right">25 seconds</span>
+				</p>
+
 				<div class="pokerTable center-block">
-					<ol class="pokerCards center-block list-unstyled list-inline">
-						<li>A<i class="icon heart"></i></li>
-						<li>K<i class="icon heart"></i></li>
-						<li>Q<i class="icon heart"></i></li>
-						<li>J<i class="icon heart"></i></li>
-						<li>10<i class="icon heart"></i></li>
+					<ol class="pokerCards center-block list-unstyled">
+						<li>A<i class="symbol spade"></i></li>
+						<li>K<i class="symbol heart"></i></li>
+						<li>Q<i class="symbol diamond"></i></li>
+						<li>J<i class="symbol club"></i></li>
+						<li>10<i class="symbol heart"></i></li>
 					</ol>
-					<div class="pokerPot">$1,000<i class="icon coins"></i></div>
+					<div class="pokerPot">1,000<i class="icon coins"></i></div>
 				</div><!-- End Poker Table -->
 				<ol class="pokerPlayers list-unstyled list-inline center-block">
 					<li class="playerOne dealerButton">
 						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
 						<span class="name">Player One</span>
-						<span class="chips">$5,000<i class="icon coins"></i></span>
-						<span class="bet">$100<i class="icon coins"></i></span>
+						<span class="chips">5,000<i class="icon coins"></i></span>
+						<span class="bet">100</span>
 					</li>
 					<li class="playerTwo smallBlind">
 						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
 						<span class="name">Player Two</span>
-						<span class="chips">$5,000<i class="icon coins"></i></span>
-						<span class="bet">$100<i class="icon coins"></i></span>
+						<span class="chips">5,000<i class="icon coins"></i></span>
+						<span class="bet">100</span>
 					</li>
 					<li class="playerThree bigBlind">
 						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
 						<span class="name">Player Three</span>
-						<span class="chips">$5,000<i class="icon coins"></i></span>
-						<span class="bet">$100<i class="icon coins"></i></span>
+						<span class="chips">5,000<i class="icon coins"></i></span>
+						<span class="bet">100</span>
 					</li>
-					<li class="playerFour firstAct">
+					<li class="playerFour firstAct folded">
 						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
 						<span class="name">Player Four</span>
-						<span class="chips">$5,000<i class="icon coins"></i></span>
-						<span class="bet">$100<i class="icon coins"></i></span>
+						<span class="chips">5,000<i class="icon coins"></i></span>
+						<span class="bet"></span>
 					</li>
 					<li class="playerFive currentPlayer">
 						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
 						<span class="name">Player Five</span>
-						<span class="chips">$5,000<i class="icon coins"></i></span>
-						<span class="bet">$100<i class="icon coins"></i></span>
+						<span class="chips">5,000<i class="icon coins"></i></span>
+						<span class="bet">100</span>
 					</li>
-					<li class="playerSix">
+					<li class="playerSix me">
 						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
 						<span class="name">Player Six</span>
-						<span class="chips">$5,000<i class="icon coins"></i></span>
-						<span class="bet">$100<i class="icon coins"></i></span>
+						<span class="chips">5,000<i class="icon coins"></i></span>
+						<span class="bet">100</span>
 					</li>
-					<li class="playerSeven">
-						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+					<li class="playerSeven winner">
+						<span class="bet">100</span>
 						<span class="name">Player Seven</span>
-						<span class="chips">$5,000<i class="icon coins"></i></span>
-						<span class="bet">$100<i class="icon coins"></i></span>
+						<span class="chips">5,000<i class="icon coins"></i></span>
+						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
 					</li>
 					<li class="playerEight">
-						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+						<span class="bet">100</span>
 						<span class="name">Player Eight</span>
-						<span class="chips">$5,000<i class="icon coins"></i></span>
-						<span class="bet">$100<i class="icon coins"></i></span>
+						<span class="chips">5,000<i class="icon coins"></i></span>
+						<img src="bootstrap/img/default_user.jpg" alt="No Image" class="img-circle">
 					</li>
 					<li class="playerNine">
-						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+						<span class="bet">100</span>
 						<span class="name">Player Nine</span>
-						<span class="chips">$5,000<i class="icon coins"></i></span>
-						<span class="bet">$100<i class="icon coins"></i></span>
+						<span class="chips">5,000<i class="icon coins"></i></span>
+						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+					</li>
+					<li class="playerTen">
+						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
+						<span class="name">Player Ten</span>
+						<span class="chips">5,000<i class="icon coins"></i></span>
+						<span class="bet">100</span>
 					</li>
 				</ol>
-				<div class="pokerCards myHand center-block">
-					<ol>
-						<li>9<i class="icon heart"></i></li>
-						<li>8<i class="icon heart"></i></li>
-					</ol>
-				</div>
-				<div class="pokerController pull-right">
-					<button type="button" class="btn btn-primary" disabled="disabled">Check</button>
-					<button type="button" class="btn btn-success" disabled="disabled">Bet</button>
-					<button type="button" class="btn btn-success">Call</button>
-					<button type="button" class="btn btn-warning">Raise</button>
-					<button type="button" class="btn btn-danger">Fold</button>
+				<div class="row">
+					<div class="pokerChat col-md-4">
+						<div class="chatRoom"></div>
+						<form role="form">
+							<div class="form-group">
+								<div class="col-sm-9">
+									<input type="text" class="form-control" id="chatBox" placeholder="">
+								</div>
+								<button type="submit" class="btn btn-default col-sm-3">Submit</button>
+							</div>
+						</form>
+					</div>
+					<div class="col-md-4">
+						<ol class="pokerCards myHand center-block list-unstyled">
+							<li>9<i class="symbol heart"></i></li>
+							<li>8<i class="symbol heart"></i></li>
+						</ol>
+					</div>
+					<div class="pokerController col-md-4">
+						<form class="pull-right" role="form">
+							<div class="form-group">
+								<label for="amount" class="control-label">Bet/Raise Amount</label>
+								<input type="text" class="form-control" id="amount" placeholder="Enter Bet">
+							</div>
+							<div class="form-group">
+								<button type="button" class="btn btn-primary" disabled="disabled">Check</button>
+								<button type="button" class="btn btn-success" disabled="disabled">Bet</button>
+								<button type="button" class="btn btn-success">Call</button>
+								<button type="button" class="btn btn-warning">Raise</button>
+								<button type="button" class="btn btn-danger">Fold</button>
+							</div>
+						</form>
+					</div>
 				</div>
 			</div><!-- End Poker Room -->
 
