@@ -1,0 +1,9 @@
+<ol class="pokerPlayers list-unstyled list-inline center-block">
+    <!-- dealerButton smallBlind bigBlind firstAct currentPlayer folded me winner -->
+    <li ng-repeat="player in players">
+        <img src="{{player.imageUrl}}" alt="{{player.name}}" class="img-circle img-player">
+        <span class="name">{{player.name}}</span>
+        <span class="chips">{{player.chips}}<i class="icon coins"></i></span>
+        <span class="bet">{{player.bet}}</span>
+    </li>
+</ol>

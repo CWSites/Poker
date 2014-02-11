@@ -7830,6 +7830,10 @@ td.visible-print {
   padding: 20px 50px;
   height: 100%;
 }
+.pokerRoom form label {
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
 .pokerTable {
   width: 800px;
   height: 350px;
@@ -7847,6 +7851,9 @@ td.visible-print {
 .pokerCards.myHand {
   width: 240px;
   height: 150px;
+}
+.pokerCards.myHand.folded {
+  opacity: 0.4;
 }
 .pokerCards.myHand li {
   width: 46%;
@@ -7897,6 +7904,10 @@ td.visible-print {
 .pokerPot {
   font-weight: bold;
   font-size: 1.2em;
+  display: none;
+}
+.pokerPot.display {
+  display: block;
 }
 .pokerPlayers {
   width: 800px;
@@ -7919,6 +7930,12 @@ td.visible-print {
 }
 .pokerPlayers li.me img {
   border-color: black;
+}
+.pokerPlayers li.me .bet {
+  opacity: 0;
+}
+.pokerPlayers li.me .bet.display {
+  opacity: 1;
 }
 .pokerPlayers li.winner {
   color: #428bca;
@@ -7957,16 +7974,45 @@ td.visible-print {
 .pokerPlayers li:nth-child(4) {
   top: -40px;
 }
+.pokerPlayers li:nth-child(2) .bottom-seat,
+.pokerPlayers li:nth-child(3) .bottom-seat,
+.pokerPlayers li:nth-child(4) .bottom-seat {
+  display: none;
+}
 .pokerPlayers li:nth-child(7),
 .pokerPlayers li:nth-child(8),
 .pokerPlayers li:nth-child(9) {
   bottom: -40px;
+}
+.pokerPlayers li:nth-child(7) .img-player,
+.pokerPlayers li:nth-child(8) .img-player,
+.pokerPlayers li:nth-child(9) .img-player,
+.pokerPlayers li:nth-child(7) .bet,
+.pokerPlayers li:nth-child(8) .bet,
+.pokerPlayers li:nth-child(9) .bet {
+  display: none;
+}
+.pokerPlayers li:nth-child(7) .bottom-seat,
+.pokerPlayers li:nth-child(8) .bottom-seat,
+.pokerPlayers li:nth-child(9) .bottom-seat {
+  display: inline;
+}
+.pokerPlayers li:nth-child(7) .bet.bottom-seat,
+.pokerPlayers li:nth-child(8) .bet.bottom-seat,
+.pokerPlayers li:nth-child(9) .bet.bottom-seat {
+  display: block;
 }
 .pokerPlayers li:nth-child(1),
 .pokerPlayers li:nth-child(5),
 .pokerPlayers li:nth-child(6),
 .pokerPlayers li:nth-child(10) {
   height: 60px;
+}
+.pokerPlayers li:nth-child(1) .bottom-seat,
+.pokerPlayers li:nth-child(5) .bottom-seat,
+.pokerPlayers li:nth-child(6) .bottom-seat,
+.pokerPlayers li:nth-child(10) .bottom-seat {
+  display: none;
 }
 .pokerPlayers li:nth-child(2),
 .pokerPlayers li:nth-child(7) {
@@ -7989,44 +8035,44 @@ td.visible-print {
   bottom: 95px;
 }
 .pokerPlayers li:nth-child(1),
-.pokerPlayers li:nth-child(6) {
+.pokerPlayers li:nth-child(10) {
   left: -35px;
   text-align: left;
 }
 .pokerPlayers li:nth-child(1) img,
-.pokerPlayers li:nth-child(6) img {
+.pokerPlayers li:nth-child(10) img {
   float: left;
 }
 .pokerPlayers li:nth-child(5),
-.pokerPlayers li:nth-child(10) {
+.pokerPlayers li:nth-child(6) {
   right: -35px;
   text-align: right;
 }
 .pokerPlayers li:nth-child(5) img,
-.pokerPlayers li:nth-child(10) img {
+.pokerPlayers li:nth-child(6) img {
   float: right;
-}
-.pokerPlayers .bet {
-  color: black;
-  text-shadow: none;
-}
-.pokerPlayers .chips {
-  color: white;
-}
-.pokerPlayers img {
-  width: 50px;
-  height: 50px;
-  margin: 3px 10px;
-  border: 3px solid white;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 .pokerPlayers span {
   display: block;
   height: 17px;
 }
-form label {
+.pokerPlayers .bet {
+  color: black;
+  text-shadow: none;
+  opacity: 0;
+}
+.pokerPlayers .bet.display {
+  opacity: 1;
+}
+.pokerPlayers .chips {
   color: white;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+img.img-player {
+  width: 50px;
+  height: 50px;
+  margin: 3px 10px;
+  border: 3px solid white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 .notice {
   padding: 10px;
@@ -8035,9 +8081,6 @@ form label {
 }
 .notice .timer {
   font-weight: bold;
-}
-.myTurn .notice {
-  opacity: 1;
 }
 .chatRoom {
   width: 100%;
@@ -8050,11 +8093,43 @@ form label {
 .pokerChat .col-sm-9 {
   padding-left: 0;
 }
+.pokerController.disabled {
+  opacity: 0.4;
+}
+.blinds {
+  color: #ccc;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
 i.icon.coins {
   color: #f0ad4e;
   margin-left: 5px;
   font-weight: bold;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+.myTurn .notice {
+  opacity: 1;
+}
+.pokerRoom.cardPreFlop .pokerPot {
+  display: none;
+}
+.pokerRoom.folded .myHand {
+  opacity: .4;
+}
+.pokerRoom.playerBet #checkBtn,
+.pokerRoom.playerRaise #checkBtn,
+.pokerRoom.playerBet #betBtn,
+.pokerRoom.playerRaise #betBtn {
+  display: none;
+}
+.pokerRoom.playerBet #callBtn,
+.pokerRoom.playerRaise #callBtn,
+.pokerRoom.playerBet #raiseBtn,
+.pokerRoom.playerRaise #raiseBtn {
+  display: inline-block;
+}
+#callBtn,
+#raiseBtn {
+  display: none;
 }
 .btn-default,
 .btn-primary,

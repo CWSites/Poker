@@ -22,6 +22,11 @@
 	background: @gray;
 	padding: 20px 50px;
 	height: 100%;
+
+	form label {
+		color: white;
+		text-shadow: 1px 1px 2px @shadow;
+	}
 }
 .pokerTable {
 	width: 800px;
@@ -40,6 +45,9 @@
 	&.myHand {
 		width: 240px;
 		height: 150px;
+		&.folded {
+			opacity: 0.4;
+		}
 
 		li {
 			width: 46%;
@@ -88,6 +96,10 @@
 .pokerPot {
 	font-weight: bold;
 	font-size: 1.2em;
+	display: none;
+	&.display {
+		display: block;
+	}
 }
 .pokerPlayers {
 	width: 800px;
@@ -108,8 +120,16 @@
 		text-shadow: 1px 1px 1px @shadow;
 		overflow: hidden;
 
-		&.me img {
-			border-color: black;
+		&.me {
+			img {
+				border-color: black;
+			}
+			.bet {
+				opacity: 0;
+				&.display {
+					opacity: 1;
+				}
+			}
 		}
 		&.winner {
 			color: @brand-primary;
@@ -149,17 +169,25 @@
 		&:nth-child(3),
 		&:nth-child(4){
 			top: -40px;
+
+			.bottom-seat {display: none;}
 		}
 		&:nth-child(7),
 		&:nth-child(8),
 		&:nth-child(9){
 			bottom: -40px;
+
+			.img-player, .bet {display: none;}
+			.bottom-seat {display: inline;}
+			.bet.bottom-seat {display: block;}
 		}
 		&:nth-child(1),
 		&:nth-child(5),
 		&:nth-child(6),
 		&:nth-child(10) {
 			height: 60px;
+
+			.bottom-seat {display: none;}
 		}
 		&:nth-child(2),
 		&:nth-child(7) {
@@ -182,14 +210,14 @@
 			bottom: 95px;
 		}
 		&:nth-child(1),
-		&:nth-child(6) {
+		&:nth-child(10) {
 			left: -35px;
 			text-align: left;
 
 			img {float: left;}
 		}
 		&:nth-child(5),
-		&:nth-child(10) {
+		&:nth-child(6) {
 			right: -35px;
 			text-align: right;
 
@@ -197,31 +225,29 @@
 		}
 	}
 
-	.bet {
-		color: black;
-		text-shadow: none;
-	}
-	.chips {
-		color: white;
-	}
-
-	img {
-		width: 50px;
-		height: 50px;
-		margin: 3px 10px;
-		border: 3px solid white;
-		box-shadow: 0 0 5px @shadow;
-	}
-
 	span {
 		display: block;
 		height: 17px;
 	}
+	.bet {
+		color: black;
+		text-shadow: none;
+		opacity: 0;
+		&.display {
+			opacity: 1;
+		}
+	}
+	.chips {
+		color: white;
+	}
 }
 
-form label {
-	color: white;
-	text-shadow: 1px 1px 2px @shadow;
+img.img-player {
+	width: 50px;
+	height: 50px;
+	margin: 3px 10px;
+	border: 3px solid white;
+	box-shadow: 0 0 5px @shadow;
 }
 
 .notice {
@@ -232,11 +258,6 @@ form label {
 	.timer {
 		font-weight: bold;
 	}
-}
-
-// During my turn, certain things will happen
-.myTurn {
-	.notice {opacity: 1;}
 }
 
 .chatRoom {
@@ -254,6 +275,15 @@ form label {
 	}
 }
 
+.pokerController.disabled {
+	opacity: 0.4;
+}
+
+.blinds {
+	color: #ccc;
+	text-shadow: 1px 1px 1px @shadow;
+}
+
 i.icon.coins {
 	color: @brand-warning;
 	margin-left: 5px;
@@ -261,6 +291,38 @@ i.icon.coins {
 	text-shadow: 1px 1px 1px @shadow;
 }
 
+//
+// Various Game Statuses
+// --------------------------------------------------
+
+.myTurn {
+	.notice {opacity: 1;}
+}
+
+.pokerRoom {
+	&.cardPreFlop {
+		.pokerPot {
+			display: none;
+		}
+	}
+	&.folded {
+		.myHand {
+			opacity: .4;
+		}
+	}
+	&.playerBet, &.playerRaise {
+		#checkBtn, #betBtn {
+			display: none;
+		}
+		#callBtn, #raiseBtn {
+			display: inline-block;
+		}
+	}
+}
+
+#callBtn, #raiseBtn {
+	display: none;
+}
 
 //
 // Buttons

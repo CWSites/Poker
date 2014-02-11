@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="pokerApp">
   <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,10 +19,15 @@
 	  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 	<![endif]-->
 
-	<script src='https://cdn.firebase.com/v0/firebase.js'></script>
+	<!-- Firebase -->
+	<script src="https://cdn.firebase.com/v0/firebase.js"></script>
+	<!-- AngularJS -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
+	<script src="js/app.js"></script>
+	<script src="js/controllers.js"></script>
 
   </head>
-  <body>
+  <body ng-controller="PlayerListCtrl">
 	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 	  <div class="container">
 		<div class="navbar-header">
@@ -36,9 +41,9 @@
 		</div>
 		<div class="collapse navbar-collapse">
 			<ul class="nav navbar-nav">
-				<li class="active"><a href="#">Home</a></li>
+				<li class="active"><a href="index.html">Home</a></li>
 				<li><a href="#rules">Rules</a></li>
-				<li><a href="#leaderboard">Leaderboard</a></li>
+				<li><a href="leaderboard.html">Leaderboard</a></li>
 				<li><a href="#register">Register</a></li>
 			</ul>
 		</div><!--/.nav-collapse -->
@@ -51,7 +56,9 @@
 			<h1>Let's Play!</h1>
 			<p class="lead">The rules are simple, No Limit Texas Hold'em</p>
 
-			<div class="pokerRoom myTurn">
+			<!-- myTurn folded cardPreFlop cardFlop cardTurn cardRiver playerBet playerRaise final -->
+			<div class="pokerRoom final">
+				<!-- Use to display winner, player raised, when it's "my" turn -->
 				<p class="notice bg-warning">
 					It's your turn
 					<span class="timer pull-right">25 seconds</span>
@@ -65,72 +72,31 @@
 						<li>J<i class="symbol club"></i></li>
 						<li>10<i class="symbol heart"></i></li>
 					</ol>
-					<div class="pokerPot">1,000<i class="icon coins"></i></div>
+					<div class="pokerPot"
+						ng-class="{display:pot!=0}">{{pot}}<i class="icon coins"></i></div>
 				</div><!-- End Poker Table -->
 				<ol class="pokerPlayers list-unstyled list-inline center-block">
-					<li class="playerOne dealerButton">
-						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
-						<span class="name">Player One</span>
-						<span class="chips">5,000<i class="icon coins"></i></span>
-						<span class="bet">100</span>
-					</li>
-					<li class="playerTwo smallBlind">
-						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
-						<span class="name">Player Two</span>
-						<span class="chips">5,000<i class="icon coins"></i></span>
-						<span class="bet">100</span>
-					</li>
-					<li class="playerThree bigBlind">
-						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
-						<span class="name">Player Three</span>
-						<span class="chips">5,000<i class="icon coins"></i></span>
-						<span class="bet">100</span>
-					</li>
-					<li class="playerFour firstAct folded">
-						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
-						<span class="name">Player Four</span>
-						<span class="chips">5,000<i class="icon coins"></i></span>
-						<span class="bet"></span>
-					</li>
-					<li class="playerFive currentPlayer">
-						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
-						<span class="name">Player Five</span>
-						<span class="chips">5,000<i class="icon coins"></i></span>
-						<span class="bet">100</span>
-					</li>
-					<li class="playerSix me">
-						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
-						<span class="name">Player Six</span>
-						<span class="chips">5,000<i class="icon coins"></i></span>
-						<span class="bet">100</span>
-					</li>
-					<li class="playerSeven winner">
-						<span class="bet">100</span>
-						<span class="name">Player Seven</span>
-						<span class="chips">5,000<i class="icon coins"></i></span>
-						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
-					</li>
-					<li class="playerEight">
-						<span class="bet">100</span>
-						<span class="name">Player Eight</span>
-						<span class="chips">5,000<i class="icon coins"></i></span>
-						<img src="bootstrap/img/default_user.jpg" alt="No Image" class="img-circle">
-					</li>
-					<li class="playerNine">
-						<span class="bet">100</span>
-						<span class="name">Player Nine</span>
-						<span class="chips">5,000<i class="icon coins"></i></span>
-						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
-					</li>
-					<li class="playerTen">
-						<img src="bootstrap/img/ichigo.jpg" alt="Ichigo Kurosaki" class="img-circle">
-						<span class="name">Player Ten</span>
-						<span class="chips">5,000<i class="icon coins"></i></span>
-						<span class="bet">100</span>
+					<!-- dealerButton smallBlind bigBlind firstAct currentPlayer folded me winner -->
+					<li
+						ng-repeat="player in players"
+						ng-class="{me:player.id==myId,
+							folded:player.fold==true,
+							currentPlayer:player.turn==true,
+							dealerButton:player.button==true,
+							smallBlind:player.blind=='small',
+							bigBlind:player.blind=='big'}">
+						<img src="{{player.imageUrl}}" alt="{{player.name}}" class="img-circle img-player">
+						<span class="bet bottom-seat"
+							ng-class="{display:(player.id==myId && placeBet) || player.currentBet != '0'}">{{player.currentBet}}</span>
+						<span class="name">{{player.name}}</span>
+						<span class="chips">{{player.chips}}<i class="icon coins"></i></span>
+						<span class="bet"
+							ng-class="{display:(player.id==myId && placeBet) || player.currentBet != '0'}">{{player.currentBet}}</span>
+						<img src="{{player.imageUrl}}" alt="{{player.name}}" class="img-circle img-player bottom-seat">
 					</li>
 				</ol>
 				<div class="row">
-					<div class="pokerChat col-md-4">
+					<div class="pokerChat col-md-5">
 						<div class="chatRoom"></div>
 						<form role="form">
 							<div class="form-group">
@@ -142,23 +108,39 @@
 						</form>
 					</div>
 					<div class="col-md-4">
-						<ol class="pokerCards myHand center-block list-unstyled">
-							<li>9<i class="symbol heart"></i></li>
-							<li>8<i class="symbol heart"></i></li>
+						<ol class="pokerCards myHand center-block list-unstyled"
+							ng-class="{folded:players[myId].fold==true}">
+							<li>{{players[myId].hand[0].cardNum}}<i class="symbol {{players[myId].hand[0].cardSuit}}"></i></li>
+							<li>{{players[myId].hand[1].cardNum}}<i class="symbol {{players[myId].hand[1].cardSuit}}"></i></li>
 						</ol>
 					</div>
-					<div class="pokerController col-md-4">
+					<div class="pokerController col-md-3">
+						<p class="blinds pull-right">Blinds: 25/50</p>
 						<form class="pull-right" role="form">
 							<div class="form-group">
 								<label for="amount" class="control-label">Bet/Raise Amount</label>
-								<input type="text" class="form-control" id="amount" placeholder="Enter Bet">
+								<input type="text" class="form-control" id="amount" placeholder="Enter Bet"
+									ng-model="players[myId].bet"
+									ng-disabled="players[myId].fold==true || players[myId].turn==false">
 							</div>
 							<div class="form-group">
-								<button type="button" class="btn btn-primary" disabled="disabled">Check</button>
-								<button type="button" class="btn btn-success" disabled="disabled">Bet</button>
-								<button type="button" class="btn btn-success">Call</button>
-								<button type="button" class="btn btn-warning">Raise</button>
-								<button type="button" class="btn btn-danger">Fold</button>
+								<button id="checkBtn" class="btn btn-success"
+									ng-disabled="players[myId].fold==true || players[myId].turn==false">Check</button>
+								<button id="betBtn" class="btn btn-warning"
+									ng-disabled="players[myId].fold==true || players[myId].turn==false"
+									ng-click="placeBet=true;
+									players[myId].currentBet=players[myId].bet;
+									players[myId].chips=players[myId].chips-players[myId].currentBet;
+									players[myId].bet='';">Bet</button>
+								<button id="callBtn" class="btn btn-warning"
+									ng-disabled="players[myId].fold==true || players[myId].turn==false"
+									ng-click="placeBet=true">Call</button>
+								<button id="raiseBtn" class="btn btn-warning"
+									ng-disabled="players[myId].fold==true || players[myId].turn==false"
+									ng-click="placeBet=true">Raise</button>
+								<button id="foldBtn" class="btn btn-danger"
+									ng-disabled="players[myId].fold==true || players[myId].turn==false"
+									ng-click="players[myId].fold=true">Fold</button>
 							</div>
 						</form>
 					</div>
