@@ -56,24 +56,32 @@
 			<h1>Let's Play!</h1>
 			<p class="lead">The rules are simple, No Limit Texas Hold'em</p>
 
-			<!-- myTurn folded cardPreFlop cardFlop cardTurn cardRiver playerBet playerRaise final -->
-			<div class="pokerRoom final">
+			<!-- myTurn folded playerBet playerRaise final -->
+			<div class="pokerRoom" ng-class="{final:table.gameStatus==4}">
 				<!-- Use to display winner, player raised, when it's "my" turn -->
-				<p class="notice bg-warning">
-					It's your turn
-					<span class="timer pull-right">25 seconds</span>
-				</p>
+				<div class="alert alert-warning">
+					<div ng-class="{active:table.currentBet != 0}">
+						The current bet is {{table.currentBet}}
+					</div>
+					<div ng-class="{active:players[myId].turn==true}">
+						It's your turn<span class="timer pull-right">{{table.countdown}} seconds</span>
+					</div>
+				</div>
 
 				<div class="pokerTable center-block">
-					<ol class="pokerCards center-block list-unstyled">
-						<li>A<i class="symbol spade"></i></li>
-						<li>K<i class="symbol heart"></i></li>
-						<li>Q<i class="symbol diamond"></i></li>
-						<li>J<i class="symbol club"></i></li>
-						<li>10<i class="symbol heart"></i></li>
+					<!-- cardPreFlop cardFlop cardTurn cardRiver -->
+					<ol class="pokerCards center-block list-unstyled"
+						ng-class="{myTurn:players[myId].turn==true,
+							cardPreFlop:table.gameStatus==0,
+							cardFlop:table.gameStatus==1,
+							cardTurn:table.gameStatus==2,
+							cardRiver:table.gameStatus==3}">
+						<li ng-repeat="card in table.cards">
+							{{table.cards[$index].cardNum}}<i class="symbol {{table.cards[$index].cardSuit}}"></i>
+						</li>
 					</ol>
 					<div class="pokerPot"
-						ng-class="{display:pot!=0}">{{pot}}<i class="icon coins"></i></div>
+						ng-class="{display:table.pot!=0}">{{table.pot}}<i class="icon coins"></i></div>
 				</div><!-- End Poker Table -->
 				<ol class="pokerPlayers list-unstyled list-inline center-block">
 					<!-- dealerButton smallBlind bigBlind firstAct currentPlayer folded me winner -->
@@ -85,6 +93,7 @@
 							dealerButton:player.button==true,
 							smallBlind:player.blind=='small',
 							bigBlind:player.blind=='big'}">
+						<i class="icon more_items"></i>
 						<img src="{{player.imageUrl}}" alt="{{player.name}}" class="img-circle img-player">
 						<span class="bet bottom-seat"
 							ng-class="{display:(player.id==myId && placeBet) || player.currentBet != '0'}">{{player.currentBet}}</span>
@@ -97,7 +106,7 @@
 				</ol>
 				<div class="row">
 					<div class="pokerChat col-md-5">
-						<div class="chatRoom"></div>
+						<div class="chatRoom well"></div>
 						<form role="form">
 							<div class="form-group">
 								<div class="col-sm-9">
@@ -120,8 +129,7 @@
 							<div class="form-group">
 								<label for="amount" class="control-label">Bet/Raise Amount</label>
 								<input type="text" class="form-control" id="amount" placeholder="Enter Bet"
-									ng-model="players[myId].bet"
-									ng-disabled="players[myId].fold==true || players[myId].turn==false">
+									ng-model="players[myId].bet">
 							</div>
 							<div class="form-group">
 								<button id="checkBtn" class="btn btn-success"

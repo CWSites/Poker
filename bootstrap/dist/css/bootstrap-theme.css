@@ -25,6 +25,24 @@
   width: 300px;
   height: 75px;
 }
+.pokerCards.cardFlop li:nth-child(1),
+.pokerCards.cardFlop li:nth-child(2),
+.pokerCards.cardFlop li:nth-child(3) {
+  display: inline-block;
+}
+.pokerCards.cardTurn li:nth-child(1),
+.pokerCards.cardTurn li:nth-child(2),
+.pokerCards.cardTurn li:nth-child(3),
+.pokerCards.cardTurn li:nth-child(4) {
+  display: inline-block;
+}
+.pokerCards.cardRiver li:nth-child(1),
+.pokerCards.cardRiver li:nth-child(2),
+.pokerCards.cardRiver li:nth-child(3),
+.pokerCards.cardRiver li:nth-child(4),
+.pokerCards.cardRiver li:nth-child(5) {
+  display: inline-block;
+}
 .pokerCards.myHand {
   width: 240px;
   height: 150px;
@@ -36,6 +54,7 @@
   width: 46%;
   margin: 0 2%;
   font-size: 1.5em;
+  display: inline-block;
 }
 .pokerCards.myHand .symbol {
   height: 16px;
@@ -62,12 +81,6 @@
 .pokerCards .symbol.club {
   background-image: url('../../img/club.png');
 }
-.pokerCards ol {
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  list-style-type: none;
-}
 .pokerCards li {
   background: white;
   border-radius: 4px;
@@ -77,6 +90,8 @@
   height: 100%;
   float: left;
   text-align: right;
+  display: none;
+  list-style-type: none;
 }
 .pokerPot {
   font-weight: bold;
@@ -143,6 +158,9 @@
 .pokerPlayers li.folded .chips {
   opacity: .5;
 }
+.pokerPlayers li.folded i.more_items {
+  opacity: 0;
+}
 .pokerPlayers li.empty {
   display: none;
 }
@@ -179,6 +197,12 @@
 .pokerPlayers li:nth-child(9) .bet.bottom-seat {
   display: block;
 }
+.pokerPlayers li:nth-child(7) i.more_items,
+.pokerPlayers li:nth-child(8) i.more_items,
+.pokerPlayers li:nth-child(9) i.more_items {
+  top: 50px;
+  left: 95px;
+}
 .pokerPlayers li:nth-child(1),
 .pokerPlayers li:nth-child(5),
 .pokerPlayers li:nth-child(6),
@@ -192,7 +216,7 @@
   display: none;
 }
 .pokerPlayers li:nth-child(2),
-.pokerPlayers li:nth-child(7) {
+.pokerPlayers li:nth-child(9) {
   left: 160px;
 }
 .pokerPlayers li:nth-child(3),
@@ -200,7 +224,7 @@
   left: 320px;
 }
 .pokerPlayers li:nth-child(4),
-.pokerPlayers li:nth-child(9) {
+.pokerPlayers li:nth-child(7) {
   left: 480px;
 }
 .pokerPlayers li:nth-child(1),
@@ -220,6 +244,11 @@
 .pokerPlayers li:nth-child(10) img {
   float: left;
 }
+.pokerPlayers li:nth-child(1) i.more_items,
+.pokerPlayers li:nth-child(10) i.more_items {
+  top: 35px;
+  left: 45px;
+}
 .pokerPlayers li:nth-child(5),
 .pokerPlayers li:nth-child(6) {
   right: -35px;
@@ -229,9 +258,21 @@
 .pokerPlayers li:nth-child(6) img {
   float: right;
 }
+.pokerPlayers li:nth-child(5) i.more_items,
+.pokerPlayers li:nth-child(6) i.more_items {
+  top: 35px;
+  left: 95px;
+}
 .pokerPlayers span {
   display: block;
   height: 17px;
+}
+.pokerPlayers i.more_items {
+  position: absolute;
+  top: 32px;
+  left: 90px;
+  font-size: 20px;
+  color: #b42222;
 }
 .pokerPlayers .bet {
   color: black;
@@ -251,12 +292,15 @@ img.img-player {
   border: 3px solid white;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
-.notice {
+.alert {
   padding: 10px;
   border-radius: 4px;
   opacity: 0;
 }
-.notice .timer {
+.alert.active {
+  opacity: 1;
+}
+.alert .timer {
   font-weight: bold;
 }
 .chatRoom {
@@ -283,11 +327,8 @@ i.icon.coins {
   font-weight: bold;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
-.myTurn .notice {
+.myTurn .alert {
   opacity: 1;
-}
-.pokerRoom.cardPreFlop .pokerPot {
-  display: none;
 }
 .pokerRoom.folded .myHand {
   opacity: .4;

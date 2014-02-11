@@ -41,7 +41,30 @@
 .pokerCards {
 	width: 300px;
 	height: 75px;
-
+	&.cardFlop {
+		li:nth-child(1),
+		li:nth-child(2),
+		li:nth-child(3){
+			display: inline-block;
+		}
+	}
+	&.cardTurn {
+		li:nth-child(1),
+		li:nth-child(2),
+		li:nth-child(3),
+		li:nth-child(4){
+			display: inline-block;
+		}
+	}
+	&.cardRiver {
+		li:nth-child(1),
+		li:nth-child(2),
+		li:nth-child(3),
+		li:nth-child(4),
+		li:nth-child(5){
+			display: inline-block;
+		}
+	}
 	&.myHand {
 		width: 240px;
 		height: 150px;
@@ -53,6 +76,7 @@
 			width: 46%;
 			margin: 0 2%;
 			font-size: 1.5em;
+			display: inline-block;
 		}
 
 		.symbol {
@@ -75,13 +99,6 @@
 		&.club {background-image: url('../../img/club.png');}
 	}
 
-	ol {
-		padding: 0;
-		margin: 0;
-		height: 100%;
-		list-style-type: none;
-	}
-
 	li {
 		background: white;
 		border-radius: 4px;
@@ -91,6 +108,8 @@
 		height: 100%;
 		float: left;
 		text-align: right;
+		display: none;
+		list-style-type: none;
 	}
 }
 .pokerPot {
@@ -161,6 +180,9 @@
 		&.folded .chips {
 			opacity: .5;
 		}
+		&.folded i.more_items {
+			opacity: 0;
+		}
 		&.empty {
 			display: none;
 		}
@@ -180,6 +202,10 @@
 			.img-player, .bet {display: none;}
 			.bottom-seat {display: inline;}
 			.bet.bottom-seat {display: block;}
+			i.more_items {
+				top: 50px;
+				left: 95px;
+			}
 		}
 		&:nth-child(1),
 		&:nth-child(5),
@@ -190,7 +216,7 @@
 			.bottom-seat {display: none;}
 		}
 		&:nth-child(2),
-		&:nth-child(7) {
+		&:nth-child(9) {
 			left: 160px;
 		}
 		&:nth-child(3),
@@ -198,7 +224,7 @@
 			left: 320px;
 		}
 		&:nth-child(4),
-		&:nth-child(9) {
+		&:nth-child(7) {
 			left: 480px
 		}
 		&:nth-child(1),
@@ -215,6 +241,10 @@
 			text-align: left;
 
 			img {float: left;}
+			i.more_items {
+				top: 35px;
+				left: 45px;
+			}
 		}
 		&:nth-child(5),
 		&:nth-child(6) {
@@ -222,12 +252,23 @@
 			text-align: right;
 
 			img {float: right;}
+			i.more_items {
+				top: 35px;
+				left: 95px;
+			}
 		}
 	}
 
 	span {
 		display: block;
 		height: 17px;
+	}
+	i.more_items {
+		position: absolute;
+		top: 32px;
+		left: 90px;
+		font-size: 20px;
+		color: hsl(0, 68%, 42%);
 	}
 	.bet {
 		color: black;
@@ -250,11 +291,14 @@ img.img-player {
 	box-shadow: 0 0 5px @shadow;
 }
 
-.notice {
+.alert {
 	padding: 10px;
 	border-radius: 4px;
 	opacity: 0;
 
+	&.active {
+		opacity: 1;
+	}
 	.timer {
 		font-weight: bold;
 	}
@@ -296,15 +340,10 @@ i.icon.coins {
 // --------------------------------------------------
 
 .myTurn {
-	.notice {opacity: 1;}
+	.alert {opacity: 1;}
 }
 
 .pokerRoom {
-	&.cardPreFlop {
-		.pokerPot {
-			display: none;
-		}
-	}
 	&.folded {
 		.myHand {
 			opacity: .4;

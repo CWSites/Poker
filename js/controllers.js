@@ -1,3 +1,4 @@
+
 /* Controllers */
 
 var pokerApp = angular.module('pokerApp', []);
@@ -9,8 +10,8 @@ pokerApp.factory('playerStatus', function() {
         // set initial blinds for big/small
         setBlinds: function($scope){
             var root = $scope.players,
-            smallBlind = 25,
-            bigBlind = 50;
+            smallBlind = $scope.table.smallBlind,
+            bigBlind = smallBlind * 2;
 
             for(i=0; root.length > i; i++){
                 if (root[i].blind == "small"){
@@ -21,50 +22,107 @@ pokerApp.factory('playerStatus', function() {
                     root[i].currentBet = bigBlind;
                 }
             }
+
+            $scope.table.currentBet = bigBlind;
         },
 
-        // find first to act, begin countdown timer
-        currentPlayer: function($scope){
+        // find first to act, or first live player after button
+        findFirstPlayer: function($scope){
             var root = $scope.players,
-            playerId = 0,
-            firstToAct = 0,
-            timer = 10;
+            livePlayers = root.length,
+            firstPlayer = $scope.firstPlayer,
+            i = 0, p = 0;
 
-            // find first to act
-            for(i=0; root.length > i; i++){
-                if(root[i].turn == true){
-                    playerId = i;
-                    firstToAct = i;
+            for(i=0; livePlayers > i; i++){
+
+                // find first to act
+                if($scope.table.gameStatus == 0 && root[i].firstAct == true) {
+
+                    console.log("firstAct: " + i);
+                    $scope.firstPlayer = i;
+
+                // find first live player after button
+                } else if($scope.table.gameStatus > 0) {
+
+                    for(p=0; livePlayers > p; p++){
+                        if(root[p].fold == false){
+                            console.log("firstPlayer: " + p);
+                            $scope.firstPlayer = p;
+                        }
+                    }
                 }
             }
+        },
 
-            for(i=0; root.length > i; i++){
+        // game timer
+        gameTimer: function($scope){
+            var root = $scope.players,
+            livePlayers = root.length,
+            currentPlayer = $scope.firstPlayer,
+            roundTotal = 0;
 
-                var timerId = setInterval(function() {
-                    timer--;
+            // game timer
+            var roundLive = setInterval(function() {
 
-                    if(timer == 0) {
-                        root[playerId].turn = false;
+                // check to see if round has finished
+                if(($scope.firstPlayer - 1 == currentPlayer) && $scope.table.countdown == 0){
 
-                        // if at the end of the list, loop around
-                        if(playerId == 9){
-                            playerId = 0;
-                        } else {
-                            playerId = playerId + 1;
-                        }
+                    // update game status (preflop, flop, turn, river)
+                    $scope.table.gameStatus += 1;
 
-                        root[playerId].turn = true;
+                    // stop timer
+                    clearInterval(roundLive);
 
-                        // used to update DOM on the fly.
-                        $scope.$apply();
-
-                        timer = 10;
+                    // add up bets
+                    for(i=0; root.length > i; i++){
+                        roundTotal += root[i].currentBet;
+                        root[i].currentBet = 0;
                     }
 
-                }, 1000);
+                    // update pot
+                    $scope.table.pot = $scope.table.pot + roundTotal;
+                }
 
-                return;
-            }
+                console.log("countdown: " + $scope.table.countdown);
+
+                // when player timer is 0
+                if($scope.table.countdown == 0) {
+
+                    console.log(root[currentPlayer]);
+
+                    // no longer player's turn
+                    root[currentPlayer].turn = false;
+
+                    // if player didn't act, they forfeit the hand
+                    if(root[currentPlayer].currentBet == 0 || root[currentPlayer].currentBet < $scope.table.currentBet){
+                        root[currentPlayer].fold = true;
+                        livePlayers--;
+                    }
+
+                    // if at the end of the list, loop around
+                    if(currentPlayer == 9){
+                        currentPlayer = 0;
+                    } else {
+                        currentPlayer = currentPlayer + 1;
+                    }
+
+                    // next player's turn
+                    root[currentPlayer].turn = true;
+
+                    // reset player timer
+                    $scope.table.countdown = $scope.table.timer;
+
+                    // used to update DOM on the fly.
+                    $scope.$apply();
+                }
+
+                // countdown and update for player timer alert
+                $scope.table.countdown--;
+                $scope.$apply();
+
+            }, 1000);
+
+            return;
         }
     };
 
@@ -80,6 +138,39 @@ pokerApp.factory('playerStatus', function() {
 
 pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope, status) {
 
+    $scope.orderProp = 'rank';
+    $scope.table = {
+        'pot': 0,
+        'currentBet': 0,
+        'timer': 3,
+        'countdown': 3,
+        'smallBlind': 25,
+        'gameStatus': 0,
+        'livePlayers': 0,
+        'cards': [
+            {
+                'cardNum':'A',
+                'cardSuit':'spade'
+            },
+            {
+                'cardNum':'K',
+                'cardSuit':'heart'
+            },
+            {
+                'cardNum':'Q',
+                'cardSuit':'diamond'
+            },
+            {
+                'cardNum':'J',
+                'cardSuit':'club'
+            },
+            {
+                'cardNum':'10',
+                'cardSuit':'heart'
+            }
+        ]
+    }
+
     $scope.players = [
         {
             'id': 0,
@@ -89,6 +180,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             'chips': 1500,
             'button': true,
             'blind': '',
+            'firstAct': false,
             'fold': false,
             'winner': false,
             'turn': false,
@@ -113,6 +205,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             'chips': 1000,
             'button': false,
             'blind': 'small',
+            'firstAct': false,
             'fold': false,
             'winner': false,
             'turn': false,
@@ -137,6 +230,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             'chips': 1250,
             'button': false,
             'blind': 'big',
+            'firstAct': false,
             'fold': false,
             'winner': false,
             'turn': false,
@@ -161,6 +255,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             'chips': 1000,
             'button': false,
             'blind': '',
+            'firstAct': true,
             'fold': false,
             'winner': false,
             'turn': true,
@@ -185,6 +280,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             'chips': 1000,
             'button': false,
             'blind': '',
+            'firstAct': false,
             'fold': false,
             'winner': false,
             'turn': false,
@@ -209,6 +305,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             'chips': 1000,
             'button': false,
             'blind': '',
+            'firstAct': false,
             'fold': false,
             'winner': false,
             'turn': false,
@@ -233,6 +330,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             'chips': 1000,
             'button': false,
             'blind': '',
+            'firstAct': false,
             'fold': false,
             'winner': false,
             'turn': false,
@@ -257,6 +355,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             'chips': 900,
             'button': false,
             'blind': '',
+            'firstAct': false,
             'fold': false,
             'winner': false,
             'turn': false,
@@ -281,6 +380,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             'chips': 1000,
             'button': false,
             'blind': '',
+            'firstAct': false,
             'fold': false,
             'winner': false,
             'turn': false,
@@ -305,6 +405,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             'chips': 800,
             'button': false,
             'blind': '',
+            'firstAct': false,
             'fold': false,
             'winner': false,
             'turn': false,
@@ -323,15 +424,13 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
         }
     ];
 
-    status.setBlinds($scope);
-    // status.currentPlayer($scope);
-
-    $scope.orderProp = 'rank';
+    $scope.firstPlayer = 0;
     $scope.myId = 4;
     $scope.myBet = $scope.players[$scope.myId].bet;
-    $scope.pot = 0;
-    $scope.cards = {
+    $scope.table.livePlayers = $scope.players.length;
 
-    }
+    status.setBlinds($scope);
+    status.findFirstPlayer($scope);
+    status.gameTimer($scope);
 
 }]);
