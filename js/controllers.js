@@ -42,6 +42,7 @@ pokerApp.factory('playerStatus', function() {
                     $scope.firstPlayer = i;
 
                 // find first live player after button
+                // TO-DO: test and make sure this part works properly
                 } else if($scope.table.gameStatus > 0) {
 
                     for(p=0; livePlayers > p; p++){
@@ -71,6 +72,7 @@ pokerApp.factory('playerStatus', function() {
                     $scope.table.gameStatus += 1;
 
                     // stop timer
+                    // TO-DO: on end of round, call findFirstPlayer and start again
                     clearInterval(roundLive);
 
                     // add up bets
@@ -94,6 +96,7 @@ pokerApp.factory('playerStatus', function() {
                     root[currentPlayer].turn = false;
 
                     // if player didn't act, they forfeit the hand
+                    // TO-DO: don't forfiet players at end of round
                     if(root[currentPlayer].currentBet == 0 || root[currentPlayer].currentBet < $scope.table.currentBet){
                         root[currentPlayer].fold = true;
                         livePlayers--;
