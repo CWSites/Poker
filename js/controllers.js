@@ -33,6 +33,8 @@ pokerApp.factory('playerStatus', function() {
             firstPlayer = $scope.firstPlayer,
             i = 0, p = 0;
 
+            console.log("bingo");
+
             for(i=0; livePlayers > i; i++){
 
                 // find first to act
@@ -62,10 +64,7 @@ pokerApp.factory('playerStatus', function() {
             currentPlayer = $scope.firstPlayer,
             roundTotal = 0;
 
-            // game timer
             var roundLive = setInterval(function() {
-
-                console.log("countdown: " + $scope.table.countdown);
 
                 // when player timer is 0
                 if($scope.table.countdown == 0) {
@@ -76,10 +75,6 @@ pokerApp.factory('playerStatus', function() {
                         // update game status (preflop, flop, turn, river)
                         $scope.table.gameStatus += 1;
 
-                        // stop timer
-                        // TO-DO: on end of round, call findFirstPlayer and start again
-                        clearInterval(roundLive);
-
                         // add up bets
                         for(i=0; root.length > i; i++){
                             roundTotal += root[i].currentBet;
@@ -88,9 +83,12 @@ pokerApp.factory('playerStatus', function() {
 
                         // update pot
                         $scope.table.pot = $scope.table.pot + roundTotal;
-                    } else {
 
-                        console.log(root[currentPlayer]);
+                        // stop timer
+                        // TO-DO: on end of round, call findFirstPlayer and start again
+                        clearInterval(roundLive);
+
+                    } else {
 
                         // no longer player's turn
                         root[currentPlayer].turn = false;
