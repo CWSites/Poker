@@ -154,7 +154,6 @@
   padding: 3px 6px;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
-.pokerPlayers li.folded .name,
 .pokerPlayers li.folded .chips {
   opacity: .5;
 }

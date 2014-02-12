@@ -65,58 +65,58 @@ pokerApp.factory('playerStatus', function() {
             // game timer
             var roundLive = setInterval(function() {
 
-                // check to see if round has finished
-                if(($scope.firstPlayer - 1 == currentPlayer) && $scope.table.countdown == 0){
-
-                    // update game status (preflop, flop, turn, river)
-                    $scope.table.gameStatus += 1;
-
-                    // stop timer
-                    // TO-DO: on end of round, call findFirstPlayer and start again
-                    clearInterval(roundLive);
-
-                    // add up bets
-                    for(i=0; root.length > i; i++){
-                        roundTotal += root[i].currentBet;
-                        root[i].currentBet = 0;
-                    }
-
-                    // update pot
-                    $scope.table.pot = $scope.table.pot + roundTotal;
-                }
-
                 console.log("countdown: " + $scope.table.countdown);
 
                 // when player timer is 0
                 if($scope.table.countdown == 0) {
 
-                    console.log(root[currentPlayer]);
+                    // check to see if round has finished
+                    if($scope.firstPlayer - 1 == currentPlayer){
 
-                    // no longer player's turn
-                    root[currentPlayer].turn = false;
+                        // update game status (preflop, flop, turn, river)
+                        $scope.table.gameStatus += 1;
 
-                    // if player didn't act, they forfeit the hand
-                    // TO-DO: don't forfiet players at end of round
-                    if(root[currentPlayer].currentBet == 0 || root[currentPlayer].currentBet < $scope.table.currentBet){
-                        root[currentPlayer].fold = true;
-                        livePlayers--;
-                    }
+                        // stop timer
+                        // TO-DO: on end of round, call findFirstPlayer and start again
+                        clearInterval(roundLive);
 
-                    // if at the end of the list, loop around
-                    if(currentPlayer == 9){
-                        currentPlayer = 0;
+                        // add up bets
+                        for(i=0; root.length > i; i++){
+                            roundTotal += root[i].currentBet;
+                            root[i].currentBet = 0;
+                        }
+
+                        // update pot
+                        $scope.table.pot = $scope.table.pot + roundTotal;
                     } else {
-                        currentPlayer = currentPlayer + 1;
+
+                        console.log(root[currentPlayer]);
+
+                        // no longer player's turn
+                        root[currentPlayer].turn = false;
+
+                        // if player didn't act, they forfeit the hand
+                        if(root[currentPlayer].currentBet == 0 || root[currentPlayer].currentBet < $scope.table.currentBet){
+                            root[currentPlayer].fold = true;
+                            livePlayers--;
+                        }
+
+                        // if at the end of the list, loop around
+                        if(currentPlayer == 9){
+                            currentPlayer = 0;
+                        } else {
+                            currentPlayer = currentPlayer + 1;
+                        }
+
+                        // next player's turn
+                        root[currentPlayer].turn = true;
+
+                        // reset player timer
+                        $scope.table.countdown = $scope.table.timer;
+
+                        // used to update DOM on the fly.
+                        $scope.$apply();
                     }
-
-                    // next player's turn
-                    root[currentPlayer].turn = true;
-
-                    // reset player timer
-                    $scope.table.countdown = $scope.table.timer;
-
-                    // used to update DOM on the fly.
-                    $scope.$apply();
                 }
 
                 // countdown and update for player timer alert

@@ -176,13 +176,15 @@
 			padding: 3px 6px;
 			box-shadow: 1px 1px 1px @shadow;
 		}
-		&.folded .name,
-		&.folded .chips {
-			opacity: .5;
+		&.folded {
+			.chips {
+				opacity: .5;
+			}
+			i.more_items {
+				opacity: 0;
+			}
 		}
-		&.folded i.more_items {
-			opacity: 0;
-		}
+
 		&.empty {
 			display: none;
 		}
