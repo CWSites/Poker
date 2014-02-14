@@ -8152,24 +8152,29 @@ i.icon.coins {
 .myTurn .alert {
   opacity: 1;
 }
-.pokerRoom.folded .myHand {
+#callBtn,
+#raiseBtn {
+  display: none;
+}
+.pokerRoom.folded .myHand,
+.pokerRoom.final .myHand {
   opacity: .4;
 }
 .pokerRoom.playerBet #checkBtn,
 .pokerRoom.playerRaise #checkBtn,
+.pokerRoom.preFlop #checkBtn,
 .pokerRoom.playerBet #betBtn,
-.pokerRoom.playerRaise #betBtn {
+.pokerRoom.playerRaise #betBtn,
+.pokerRoom.preFlop #betBtn {
   display: none;
 }
 .pokerRoom.playerBet #callBtn,
 .pokerRoom.playerRaise #callBtn,
+.pokerRoom.preFlop #callBtn,
 .pokerRoom.playerBet #raiseBtn,
-.pokerRoom.playerRaise #raiseBtn {
+.pokerRoom.playerRaise #raiseBtn,
+.pokerRoom.preFlop #raiseBtn {
   display: inline-block;
-}
-#callBtn,
-#raiseBtn {
-  display: none;
 }
 .btn-default,
 .btn-primary,

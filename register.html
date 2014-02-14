@@ -42,8 +42,8 @@
 			<ul class="nav navbar-nav">
 				<li><a href="index.html">Home</a></li>
 				<li><a href="rules.html">Rules</a></li>
-				<li class="active"><a href="leaderboard.html">Leaderboard</a></li>
-				<li><a href="register.html">Register</a></li>
+				<li><a href="leaderboard.html">Leaderboard</a></li>
+				<li class="active"><a href="register.html">Register</a></li>
 			</ul>
 		</div><!--/.nav-collapse -->
 	  </div>
@@ -52,42 +52,14 @@
 	<div class="container">
 
 		<div class="starter-template">
-			<h1>Leaderboard</h1>
-			<p class="lead">How do you compare?</p>
+			<h1>Register</h1>
+			<p class="lead">Sign up for free to play</p>
 
 			<form role="form">
 				<div class="form-group">
 					<input class="form-control" id="playerSearch" ng-model="query" placeholder="Player Search">
 				</div>
 			</form>
-
-			<table class="table table-bordered table-condensed table-striped table-hover">
-				<thead>
-					<tr>
-						<th width="100" ng-click="orderProp='rank'; reverse=!reverse">
-							Rank
-							<i class="icon sorting pull-right"></i>
-						</th>
-						<th widht="100">Player Image</th>
-						<th ng-click="orderProp='name'; reverse=!reverse">
-							Player Name
-							<i class="icon sorting pull-right"></i>
-						</th>
-						<th ng-click="orderProp='chips'; reverse=!reverse">
-							Player Chips
-							<i class="icon sorting pull-right"></i>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="player in players | filter:query | orderBy:orderProp:reverse">
-						<td>{{player.rank}}</td>
-						<td><img src="{{player.imageUrl}}" alt="{{player.name}}" class="img-circle img-player"></td>
-						<td>{{player.name}}</td>
-						<td>{{player.chips}}</td>
-					</tr>
-				</tbody>
-			</table>
 
 		</div>
 

@@ -73,7 +73,7 @@ pokerApp.factory('playerStatus', function() {
                 console.log("bet placed: " + root[currentPlayer].callBetRaise);
 
                 // when player timer is 0
-                if($scope.table.countdown == 0 || root[currentPlayer].callBetRaise == true) {
+                if($scope.table.countdown == 0 || root[currentPlayer].callBetRaise == true || root[currentPlayer].fold == true) {
 
                     // check to see if round has finished
                     if($scope.firstPlayer - 1 == currentPlayer){

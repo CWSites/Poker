@@ -345,13 +345,17 @@ i.icon.coins {
 	.alert {opacity: 1;}
 }
 
+#callBtn, #raiseBtn {
+	display: none;
+}
+
 .pokerRoom {
-	&.folded {
+	&.folded, &.final {
 		.myHand {
 			opacity: .4;
 		}
 	}
-	&.playerBet, &.playerRaise {
+	&.playerBet, &.playerRaise, &.preFlop {
 		#checkBtn, #betBtn {
 			display: none;
 		}
@@ -359,10 +363,6 @@ i.icon.coins {
 			display: inline-block;
 		}
 	}
-}
-
-#callBtn, #raiseBtn {
-	display: none;
 }
 
 //
