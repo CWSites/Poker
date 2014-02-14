@@ -77,8 +77,9 @@ pokerApp.factory('playerStatus', function() {
 
                         // add up bets
                         for(i=0; root.length > i; i++){
-                            roundTotal += root[i].currentBet;
+                            roundTotal += +root[i].currentBet;
                             root[i].currentBet = 0;
+                            $scope.$apply();
                         }
 
                         // update pot
@@ -123,6 +124,8 @@ pokerApp.factory('playerStatus', function() {
 
             }, 1000);
 
+            // this.findFirstPlayer();
+
             return;
         }
     };
@@ -131,20 +134,14 @@ pokerApp.factory('playerStatus', function() {
 
 });
 
-// pokerApp.controller('PlayerListCtrl', function($scope, $http) {
-//     $http.get('../players/players.json').success(function(data) {
-//         $scope.players = data;
-//     });
-// });
-
 pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope, status) {
 
     $scope.orderProp = 'rank';
     $scope.table = {
         'pot': 0,
         'currentBet': 0,
-        'timer': 3,
-        'countdown': 3,
+        'timer': 1,
+        'countdown': 1,
         'smallBlind': 25,
         'gameStatus': 0,
         'livePlayers': 0,
@@ -433,5 +430,9 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
     status.setBlinds($scope);
     status.findFirstPlayer($scope);
     status.gameTimer($scope);
+
+    if($scope.table.gameStatus == 1){
+        status.findFirstPlayer($scope);
+    }
 
 }]);
