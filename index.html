@@ -59,7 +59,7 @@
 			<!-- myTurn folded playerBet playerRaise final -->
 			<div class="pokerRoom" ng-class="{final:table.gameStatus==4}">
 				<!-- Use to display winner, player raised, when it's "my" turn -->
-				<div class="alert alert-warning">
+				<div class="alert alert-warning" ng-class="{active:table.currentBet != 0, active:players[myId].turn==true}">
 					<div ng-class="{active:table.currentBet != 0}">
 						The current bet is {{table.currentBet}}
 					</div>
@@ -96,11 +96,15 @@
 						<i class="icon more_items"></i>
 						<img src="{{player.imageUrl}}" alt="{{player.name}}" class="img-circle img-player">
 						<span class="bet bottom-seat"
-							ng-class="{display:(player.id==myId && placeBet) || player.currentBet != 0}">{{player.currentBet}}</span>
+							ng-class="{display:(player.id==myId && player.currentBet != 0 && placeBet) || player.currentBet != 0}">
+							{{player.currentBet}}
+						</span>
 						<span class="name">{{player.name}}</span>
 						<span class="chips">{{player.chips}}<i class="icon coins"></i></span>
 						<span class="bet"
-							ng-class="{display:(player.id==myId && placeBet) || player.currentBet != 0}">{{player.currentBet}}</span>
+							ng-class="{display:(player.id==myId && player.currentBet != 0 && placeBet) || player.currentBet != 0}">
+							{{player.currentBet}}
+						</span>
 						<img src="{{player.imageUrl}}" alt="{{player.name}}" class="img-circle img-player bottom-seat">
 					</li>
 				</ol>
@@ -139,13 +143,16 @@
 									ng-click="placeBet=true;
 									players[myId].currentBet=players[myId].bet;
 									players[myId].chips=players[myId].chips-players[myId].currentBet;
-									players[myId].bet='';">Bet</button>
+									players[myId].bet='';
+									players[myId].callBetRaise=true;">Bet</button>
 								<button id="callBtn" class="btn btn-warning"
 									ng-disabled="players[myId].fold==true || players[myId].turn==false"
-									ng-click="placeBet=true">Call</button>
+									ng-click="placeBet=true;
+									players[myId].callBetRaise=true;">Call</button>
 								<button id="raiseBtn" class="btn btn-warning"
 									ng-disabled="players[myId].fold==true || players[myId].turn==false"
-									ng-click="placeBet=true">Raise</button>
+									ng-click="placeBet=true;
+									players[myId].callBetRaise=true;">Raise</button>
 								<button id="foldBtn" class="btn btn-danger"
 									ng-disabled="players[myId].fold==true || players[myId].turn==false"
 									ng-click="players[myId].fold=true">Fold</button>
