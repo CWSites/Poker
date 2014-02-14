@@ -15,9 +15,11 @@ pokerApp.factory('playerStatus', function() {
 
             for(i=0; root.length > i; i++){
                 if (root[i].blind == "small"){
+                    root[i].chips -= smallBlind;
                     root[i].bet = smallBlind;
                     root[i].currentBet = smallBlind;
                 } else if (root[i].blind == "big"){
+                    root[i].chips -= bigBlind;
                     root[i].bet = bigBlind;
                     root[i].currentBet = bigBlind;
                 }
@@ -29,11 +31,10 @@ pokerApp.factory('playerStatus', function() {
         // find first to act, or first live player after button
         findFirstPlayer: function($scope){
             var root = $scope.players,
-            livePlayers = root.length,
             firstPlayer = $scope.firstPlayer,
             i = 0, p = 0;
 
-            for(i=0; livePlayers > i; i++){
+            for(i=0; root.length > i; i++){
 
                 // find first to act
                 if($scope.table.gameStatus == 0 && root[i].firstAct == true) {
@@ -44,7 +45,7 @@ pokerApp.factory('playerStatus', function() {
                 // find first live player after button
                 } else if($scope.table.gameStatus > 0) {
 
-                    for(p=0; livePlayers > p; p++){
+                    for(p=0; root.length > p; p++){
                         if(root[p].fold == false){
                             console.log("firstPlayer: " + p);
                             $scope.firstPlayer = p;
@@ -70,23 +71,33 @@ pokerApp.factory('playerStatus', function() {
 
             var roundLive = setInterval(function() {
 
-                console.log("bet placed: " + root[currentPlayer].callBetRaise);
+                console.log("timer: " + $scope.table.countdown);
 
-                // when player timer is 0
+                // when player timer is 0, player folds, player calls, bets or raises
                 if($scope.table.countdown == 0 || root[currentPlayer].callBetRaise == true || root[currentPlayer].fold == true) {
 
                     // check to see if round has finished
-                    if($scope.firstPlayer - 1 == currentPlayer){
+                    if($scope.firstPlayer - 1 == currentPlayer && $scope.table.countdown == 0){
+
+                        // if button / big blind didn't act, they forfeit the hand, update live players
+                        if(root[$scope.firstPlayer - 1].currentBet < $scope.table.currentBet){
+                            console.log("button / bigBlind folds");
+                            root[$scope.firstPlayer -1].fold = true;
+                            livePlayers--;
+                            $scope.table.livePlayers = livePlayers;
+                        }
 
                         // add up bets
                         for(i=0; root.length > i; i++){
                             roundTotal += +root[i].currentBet;
                             root[i].currentBet = 0;
+                            root[i].bet = 0;
                             $scope.$apply();
                         }
 
                         // update pot
                         $scope.table.pot = $scope.table.pot + roundTotal;
+                        roundTotal = 0;
 
                         // check to see if more than 1 player live
                         if($scope.table.livePlayers > 1){
@@ -97,10 +108,24 @@ pokerApp.factory('playerStatus', function() {
                             // At end of round, call findFirstPlayer again
                             playerInfo.findFirstPlayer($scope);
 
+                        // find the winner and do things
                         } else {
 
                             $scope.table.gameStatus = 4;
-                            console.log("winner!")
+                            for(i=0; root.length > i; i++){
+                                if(root[i].fold == false){
+                                    $scope.players[i].winner = true;
+                                    $scope.players[i].chips += $scope.table.pot;
+                                    $scope.table.pot = 0;
+
+                                    console.log("winner!");
+                                    console.log($scope.players[i]);
+
+                                    // if more than 1 player at table with chips
+                                    // call find blinds and start new hand
+                                }
+                            }
+
                             // stop timer
                             clearInterval(roundLive);
                         }
@@ -110,8 +135,12 @@ pokerApp.factory('playerStatus', function() {
                         // no longer player's turn
                         root[currentPlayer].turn = false;
 
+                        console.log("table bet: " + $scope.table.currentBet);
+                        console.log("player current bet: " + root[currentPlayer].currentBet);
+
                         // if player didn't act, they forfeit the hand, update live players
                         if(root[currentPlayer].currentBet == 0 || root[currentPlayer].currentBet < $scope.table.currentBet){
+                            console.log("player folds");
                             root[currentPlayer].fold = true;
                             livePlayers--;
                             $scope.table.livePlayers = livePlayers;
@@ -155,8 +184,8 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
     $scope.table = {
         'pot': 0,
         'currentBet': 0,
-        'timer': 4,
-        'countdown': 4,
+        'timer': 2,
+        'countdown': 2,
         'smallBlind': 25,
         'gameStatus': 0,
         'livePlayers': 0,
@@ -456,9 +485,5 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
     status.setBlinds($scope);
     status.findFirstPlayer($scope);
     status.gameTimer($scope);
-
-    if($scope.table.gameStatus == 1){
-        status.findFirstPlayer($scope);
-    }
 
 }]);
