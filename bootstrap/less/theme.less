@@ -297,10 +297,18 @@ img.img-player {
 	padding: 10px;
 	border-radius: 4px;
 	opacity: 0;
-
+	height: 42px;
 	&.active {
 		opacity: 1;
 	}
+
+	div {
+		display: none;
+		&.active {
+			display: block;
+		}
+	}
+
 	.timer {
 		font-weight: bold;
 	}

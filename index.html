@@ -59,7 +59,10 @@
 			<!-- myTurn folded playerBet playerRaise final -->
 			<div class="pokerRoom" ng-class="{final:table.gameStatus==4, preFlop:table.gameStatus==0}">
 				<!-- Use to display winner, player raised, when it's "my" turn -->
-				<div class="alert alert-warning" ng-class="{active:players[myId].turn==true}">
+				<div class="alert alert-warning" ng-class="{active:players[myId].turn==true || table.gameStatus==4}">
+					<div ng-class="{active:table.gameStatus==4}">
+						{{winner.name}} wins this hand!
+					</div>
 					<div ng-class="{active:players[myId].turn==true}">
 						It's your turn
 						<span ng-class="{active:table.currentBet != 0}"> - The current bet is {{table.currentBet}}</span>

@@ -95,6 +95,11 @@ pokerApp.factory('playerStatus', function() {
             currentPosition = 0,
             roundTotal = 0;
 
+            if($scope.gameStatus == 4){
+                // stop timer
+                clearInterval(roundLive);
+            }
+
             // find position in live player array for first player
             for(i=0; root.length > i; i++){
                 if(root[i].playerId == $scope.firstPlayerId){
@@ -109,15 +114,15 @@ pokerApp.factory('playerStatus', function() {
 
             var roundLive = setInterval(function() {
 
-                // when player timer is 0, player folds, player calls, bets or raises
-                if($scope.table.countdown == 0 || root[currentPosition].callBetRaise == true || root[currentPosition].fold == true) {
+                // only 1 player left || when player timer is 0 || player folds || player calls, bets or raises
+                if($scope.livePlayers.length < 2 || $scope.table.countdown == 0 || root[currentPosition].callBetRaise == true || root[currentPosition].fold == true) {
 
                     console.log("------------");
                     console.log("currentPlayer ID: " + root[currentPosition].playerId);
 
                     // check to see if round has finished
                     // when current player is the one right before the first player
-                    if($scope.lastPlayerId == root[currentPosition].playerId && $scope.table.countdown == 0){
+                    if($scope.livePlayers.length < 2 || ($scope.lastPlayerId == root[currentPosition].playerId && $scope.table.countdown == 0)){
 
                         console.log("round finished")
                         console.log("currentPosition: " + currentPosition);
@@ -154,6 +159,7 @@ pokerApp.factory('playerStatus', function() {
                                     $scope.livePlayers[i].winner = true;
                                     $scope.livePlayers[i].chips += $scope.table.pot;
                                     $scope.table.pot = 0;
+                                    $scope.winner = $scope.livePlayers[i];
 
                                     // if more than 1 player at table with chips
                                     // move button, blinds, reset everything and start new hand.
@@ -527,6 +533,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
     $scope.lastPlayerId = 0;
     $scope.buttonId = 0;
     $scope.myId = 6;
+    $scope.winner = {}
     $scope.livePlayers = [];
     $scope.myBet = $scope.players[$scope.myId].bet;
 
