@@ -87,6 +87,7 @@
 					<li
 						ng-repeat="player in players"
 						ng-class="{me:player.id==myId,
+							winner:player.winner==true,
 							folded:player.fold==true,
 							currentPlayer:player.turn==true,
 							dealerButton:player.button==true,

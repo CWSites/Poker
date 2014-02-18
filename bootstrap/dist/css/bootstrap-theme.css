@@ -130,11 +130,11 @@
   opacity: 1;
 }
 .pokerPlayers li.winner {
-  color: #428bca;
+  color: #428bca !important;
   text-shadow: none;
 }
 .pokerPlayers li.winner img {
-  border-color: #428bca;
+  border-color: #428bca !important;
 }
 .pokerPlayers li.currentPlayer {
   color: #f0ad4e;
