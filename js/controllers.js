@@ -167,7 +167,7 @@ pokerApp.factory('playerStatus', function() {
             }
 
             console.log("livePlayers");
-            console.log($scope.livePlayers);
+            console.log(root);
 
             console.log("lastPlayer ID: " + $scope.lastPlayerId);
 
@@ -179,7 +179,7 @@ pokerApp.factory('playerStatus', function() {
                 }
 
                 // only 1 player left || when player timer is 0 || player folds || player calls, bets or raises
-                if($scope.livePlayers.length < 2 || $scope.table.countdown == 0 || root[currentPosition].callBetRaise == true || root[currentPosition].fold == true) {
+                if(root.length < 2 || $scope.table.countdown == 0 || root[currentPosition].callBetRaise == true || root[currentPosition].fold == true) {
 
                     console.log("------------");
                     console.log("currentPlayer ID: " + root[currentPosition].playerId);
@@ -187,6 +187,7 @@ pokerApp.factory('playerStatus', function() {
                     if($scope.lastPlayerId == root[currentPosition].playerId && $scope.table.countdown == 0){
 
                         // if last player didn't act, they forfeit the hand, update live players
+                        // has to be run here, else the game would immediately stop
                         if(root[currentPosition].currentBet < $scope.table.currentBet){
                             console.log("last player to act folds.");
 
@@ -199,7 +200,7 @@ pokerApp.factory('playerStatus', function() {
 
                     // check to see if round has finished
                     // when current player is the one right before the first player
-                    if($scope.livePlayers.length < 2 || roundFinished == true){
+                    if(root.length < 2 || roundFinished == true){
 
                         console.log("Round Finished")
 
@@ -217,7 +218,7 @@ pokerApp.factory('playerStatus', function() {
                         roundTotal = 0;
 
                         // check to see if more than 1 player live
-                        if($scope.livePlayers.length > 1){
+                        if(root.length > 1){
 
                             // update game status (preflop, flop, turn, river)
                             $scope.table.gameStatus += 1;
@@ -236,10 +237,10 @@ pokerApp.factory('playerStatus', function() {
                                     $scope.livePlayers[i].winner = true;
                                     $scope.livePlayers[i].chips += $scope.table.pot;
                                     $scope.table.pot = 0;
-                                    $scope.winner = $scope.livePlayers[i];
+                                    $scope.winner = root[i];
 
                                     // TEST: Make sure this displays properly
-                                    $scope.alert = $scope.livePlayers[i].name + " wins this hand!";
+                                    $scope.alert = root[i].name + " wins this hand!";
 
                                     // if more than 1 player at table with chips
                                     // move button, blinds, reset everything and start new hand.
@@ -264,7 +265,7 @@ pokerApp.factory('playerStatus', function() {
 
                         // if player didn't act, they forfeit the hand, update live players
                         if(root[currentPosition].currentBet < $scope.table.currentBet){
-                            console.log("player " + $scope.livePlayers[currentPosition].playerId + " folds.");
+                            console.log("player " + root[currentPosition].playerId + " folds.");
 
                             root[currentPosition].fold = true;
                             $scope.livePlayers.splice(currentPosition, 1);
