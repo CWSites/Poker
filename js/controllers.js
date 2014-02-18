@@ -19,21 +19,31 @@ pokerApp.factory('playerStatus', function() {
             $scope.winner = {}
             $scope.livePlayers = [];
 
-            playerInfo.setLivePlayers($scope);
-            playerInfo.setButtonBlinds($scope);
-            playerInfo.findFirstLastPlayer($scope);
-            playerInfo.gameTimer($scope);
+            // TEST: make sure this works if less than 2 players
+            if($scope.players.length > 1){
+
+                playerInfo.setLivePlayers($scope);
+                playerInfo.setButtonBlinds($scope);
+                playerInfo.findFirstLastPlayer($scope);
+                playerInfo.gameTimer($scope);
+
+            } else {
+
+                // TEST: make sure this alert displays
+                $scope.alert = "There aren't enough players. Invite your friends!"
+            }
         },
 
         // create live players array
         setLivePlayers: function($scope){
+            var root = $scope.livePlayers;
             $scope.livePlayers = $scope.livePlayers.concat($scope.players);
 
             // Remove anyone that doesn't have chips from livePlayers
             // TO-DO: Fix logic to remove player from seat at table
-            for(i=0; $scope.livePlayers.length > i; i++){
-                if($scope.livePlayers[i].chips == 0){
-                    console.log("player #" + $scope.livePlayers[i].playerId + " has " + $scope.livePlayers[i].chips);
+            for(i=0; root.length > i; i++){
+                if(root[i].chips == 0){
+                    console.log("player #" + root[i].playerId + " has " + root[i].chips);
                     $scope.livePlayers.splice(i, 1);
 
                     // TEST: did adding return fix it?
@@ -43,31 +53,26 @@ pokerApp.factory('playerStatus', function() {
         },
 
         // move button position & blinds for big/small
+        // makes changes to players json
+        // TEST: make sure this works as planned
         moveButtonBlinds: function($scope){
-            var root = $scope.players,
-            smallBlind = $scope.table.smallBlind,
-            bigBlind = smallBlind * 2;
+            var root = $scope.players;
 
             for(i=0; root.length > i; i++){
-                // TO-DO:
-                // - If player doesn't have enough then put all-in
-                // - Create all-in function
-                // - Write logic to check for dead button & dead small blind
 
-                // save button position in table array
                 if(root[i].button == true){
-                    $scope.players[i].button = false;
-                    $scope.players[i+1].button = true;
+                    root[i].button = false;
+                    root[i+1].button = true;
                 }
 
                 if (root[i].blind == "small"){
-                    $scope.players[i].blind = "";
-                    $scope.players[i+1].blind = "small";
+                    root[i].blind = "";
+                    root[i+1].blind = "small";
                 }
 
                 if (root[i].blind == "big"){
-                    $scope.players[i].blind = "";
-                    $scope.players[i+1].blind = "big";
+                    root[i].blind = "";
+                    root[i+1].blind = "big";
                 }
             }
         },
@@ -108,6 +113,7 @@ pokerApp.factory('playerStatus', function() {
         // find first to act, or first live player after button
         findFirstLastPlayer: function($scope){
             var root = $scope.livePlayers,
+            players = $scope.players,
             i = 0, p = 0;
 
             for(i=0; root.length > i; i++){
@@ -117,7 +123,7 @@ pokerApp.factory('playerStatus', function() {
 
                     console.log("firstActID: " + root[i].playerId);
                     $scope.firstPlayerId = root[i].playerId;
-                    $scope.lastPlayerId = $scope.players[i - 1].playerId;
+                    $scope.lastPlayerId = players[i - 1].playerId;
 
                     return;
                 }
@@ -127,16 +133,16 @@ pokerApp.factory('playerStatus', function() {
 
                     // start with button position
                     // loop through table array
-                    for(p=$scope.buttonId; $scope.players.length > p; p++){
+                    for(p=$scope.buttonId; players.length > p; p++){
 
                         // is the player in a position after the original button
-                        if($scope.players[p].fold == false){
-                            console.log("firstPlayerId: " + $scope.players[p].playerId);
-                            $scope.firstPlayerId = $scope.players[p].playerId;
+                        if(players[p].fold == false){
+                            console.log("firstPlayerId: " + players[p].playerId);
+                            $scope.firstPlayerId = players[p].playerId;
                             // $scope.lastPlayerId =
                             $scope.table.countdown = $scope.table.timer;
 
-                            // call gameTimer again
+                            // once found, make a call to gameTimer to activate the next round
                             playerInfo.gameTimer($scope);
 
                             return;
@@ -231,6 +237,9 @@ pokerApp.factory('playerStatus', function() {
                                     $scope.livePlayers[i].chips += $scope.table.pot;
                                     $scope.table.pot = 0;
                                     $scope.winner = $scope.livePlayers[i];
+
+                                    // TEST: Make sure this displays properly
+                                    $scope.alert = $scope.livePlayers[i].name + " wins this hand!";
 
                                     // if more than 1 player at table with chips
                                     // move button, blinds, reset everything and start new hand.
@@ -605,6 +614,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
     $scope.lastPlayerId = 0;
     $scope.buttonId = 0;
     $scope.myId = 6;
+    $scope.alert = "";
     $scope.winner = {}
     $scope.livePlayers = [];
     $scope.myBet = $scope.players[$scope.myId].bet;
