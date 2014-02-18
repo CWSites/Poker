@@ -9,8 +9,15 @@ pokerApp.factory('playerStatus', function() {
 
         // TO-DO: Write logic for random seating and empty seats
 
+        // moveButtonBlinds has already run
+        // reseting variables for next hand
+        // calling functions asyncronously
         resetTable: function($scope){
-            $scope.winner = {};
+            $scope.placeBet = false;
+            $scope.firstPlayerId = 0;
+            $scope.lastPlayerId = 0;
+            $scope.winner = {}
+            $scope.livePlayers = [];
 
             playerInfo.setLivePlayers($scope);
             playerInfo.setButtonBlinds($scope);
@@ -28,6 +35,39 @@ pokerApp.factory('playerStatus', function() {
                 if($scope.livePlayers[i].chips == 0){
                     console.log("player #" + $scope.livePlayers[i].playerId + " has " + $scope.livePlayers[i].chips);
                     $scope.livePlayers.splice(i, 1);
+
+                    // TEST: did adding return fix it?
+                    return;
+                }
+            }
+        },
+
+        // move button position & blinds for big/small
+        moveButtonBlinds: function($scope){
+            var root = $scope.players,
+            smallBlind = $scope.table.smallBlind,
+            bigBlind = smallBlind * 2;
+
+            for(i=0; root.length > i; i++){
+                // TO-DO:
+                // - If player doesn't have enough then put all-in
+                // - Create all-in function
+                // - Write logic to check for dead button & dead small blind
+
+                // save button position in table array
+                if(root[i].button == true){
+                    $scope.players[i].button = false;
+                    $scope.players[i+1].button = true;
+                }
+
+                if (root[i].blind == "small"){
+                    $scope.players[i].blind = "";
+                    $scope.players[i+1].blind = "small";
+                }
+
+                if (root[i].blind == "big"){
+                    $scope.players[i].blind = "";
+                    $scope.players[i+1].blind = "big";
                 }
             }
         },
@@ -184,6 +224,7 @@ pokerApp.factory('playerStatus', function() {
                         } else {
 
                             $scope.table.gameStatus = 4;
+
                             for(i=0; root.length > i; i++){
                                 if(root[i].fold == false){
                                     $scope.livePlayers[i].winner = true;
@@ -196,6 +237,12 @@ pokerApp.factory('playerStatus', function() {
                                     // playerInfo.findFirstLastPlayer($scope);
                                 }
                             }
+
+                            // move button & blinds
+                            playerInfo.moveButtonBlinds($scope);
+
+                            // start next hand
+                            playerInfo.resetTable($scope);
 
                             // stop timer
                             clearInterval(roundLive);
