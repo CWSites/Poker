@@ -9,6 +9,15 @@ pokerApp.factory('playerStatus', function() {
 
         // TO-DO: Write logic for random seating and empty seats
 
+        resetTable: function($scope){
+            $scope.winner = {};
+
+            playerInfo.setLivePlayers($scope);
+            playerInfo.setButtonBlinds($scope);
+            playerInfo.findFirstLastPlayer($scope);
+            playerInfo.gameTimer($scope);
+        },
+
         // create live players array
         setLivePlayers: function($scope){
             $scope.livePlayers = $scope.livePlayers.concat($scope.players);
@@ -94,11 +103,6 @@ pokerApp.factory('playerStatus', function() {
             var root = $scope.livePlayers,
             currentPosition = 0,
             roundTotal = 0;
-
-            if($scope.gameStatus == 4){
-                // stop timer
-                clearInterval(roundLive);
-            }
 
             // find position in live player array for first player
             for(i=0; root.length > i; i++){
@@ -537,9 +541,6 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
     $scope.livePlayers = [];
     $scope.myBet = $scope.players[$scope.myId].bet;
 
-    status.setLivePlayers($scope);
-    status.setButtonBlinds($scope);
-    status.findFirstLastPlayer($scope);
-    status.gameTimer($scope);
+    status.resetTable($scope);
 
 }]);
