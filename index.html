@@ -133,23 +133,23 @@
 						<form class="pull-right" role="form">
 							<div class="form-group">
 								<button id="checkBtn" class="btn btn-success"
-									ng-click="players[myId].callBetRaise=true;"
+									ng-click="players[myId].actionTaken=true;"
 									ng-disabled="players[myId].fold==true || players[myId].turn==false">Check</button>
 								<button id="betBtn" class="btn btn-warning"
 									ng-disabled="players[myId].fold==true || players[myId].turn==false"
-									ng-click="players[myId].callBetRaise=true;
+									ng-click="players[myId].actionTaken=true;
 										players[myId].currentBet=players[myId].bet;
 										players[myId].chips=players[myId].chips-players[myId].currentBet;
 										players[myId].bet='';">Bet</button>
 								<button id="callBtn" class="btn btn-success"
 									ng-disabled="players[myId].fold==true || players[myId].turn==false"
-									ng-click="players[myId].callBetRaise=true;
+									ng-click="players[myId].actionTaken=true;
 										players[myId].currentBet=table.currentBet;
 										players[myId].chips=players[myId].chips-players[myId].currentBet;
 										players[myId].bet='';">Call</button>
 								<button id="raiseBtn" class="btn btn-warning"
 									ng-disabled="players[myId].fold==true || players[myId].turn==false"
-									ng-click="players[myId].callBetRaise=true;
+									ng-click="players[myId].actionTaken=true;
 									players[myId].currentBet=table.currentBet * 2;
 									table.currentBet=players[myId].currentBet;
 									players[myId].chips=players[myId].chips-players[myId].currentBet;
