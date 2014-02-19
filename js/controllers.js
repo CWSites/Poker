@@ -85,8 +85,9 @@ pokerApp.factory('playerStatus', function() {
         },
 
         // set button position & blinds for big/small
+        // changes saved to players.json
         setButtonBlinds: function($scope){
-            var root = $scope.livePlayers,
+            var root = $scope.players,
             smallBlind = $scope.table.smallBlind,
             bigBlind = smallBlind * 2;
 
@@ -143,22 +144,26 @@ pokerApp.factory('playerStatus', function() {
 
                     // start with button position
                     // loop through table array
-                    for(x=$scope.buttonId; players.length > x; x++){
+                    for(x = +$scope.buttonId; players.length > x; x++){
 
                         // is the player in a position after the original button
-                        if(root[x].fold == false){
+                        if(players[x].fold == false){
 
-                            $scope.firstPlayerId = root[x].playerId;
-                            console.log("firstPlayerId: " + root[x].playerId);
+                            $scope.firstPlayerId = players[x].playerId;
+                            console.log("firstPlayerId: " + players[x].playerId);
+
+                            // TO-DO: Write logic to look at livePlayers array, find firstPlayer then work backwards
+                            // if first player is at position 0 then last player is at the last position
+                            // else find position and -1
 
                             if(x == 0){
-                                x = root.length;
+                                x = players.length;
                             } else {
                                 x = x;
                             }
 
-                            $scope.lastPlayerId = root[x - 1].playerId;
-                            console.log("lastPlayerId: " + root[x - 1].playerId);
+                            $scope.lastPlayerId = players[x - 1].playerId;
+                            console.log("lastPlayerId: " + players[x - 1].playerId);
 
                             $scope.table.countdown = $scope.table.timer;
 
