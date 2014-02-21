@@ -138,6 +138,7 @@ pokerApp.factory('playerStatus', function() {
 
                     // set player's turn to true
                     $scope.livePlayers[i].turn = true;
+                    $scope.$apply();
 
                     console.log("firstActID: " + root[i].playerId);
                     console.log("lastPlayer ID: " + $scope.lastPlayerId);
@@ -166,6 +167,7 @@ pokerApp.factory('playerStatus', function() {
 
                                 // set player's turn to true
                                 $scope.livePlayers[y+1].turn = true;
+                                $scope.$apply();
 
                                 // once found, make a call to gameTimer to activate the round & exit
                                 playerInfo.gameTimer($scope);
@@ -194,11 +196,14 @@ pokerApp.factory('playerStatus', function() {
 
                                 $scope.firstPlayerId = players[z].playerId;
                                 console.log("firstPlayerId: " + players[z].playerId);
+                                console.log(players[z].playerId);
 
                                 // loop through live players & find first player in live players array
                                 for(y = 0; root.length > y; y++){
 
                                     if(root[y].playerId == $scope.firstPlayerId){
+
+                                        $scope.livePlayers[y].turn = true;
 
                                         // player immediately before first player is last to act
                                         $scope.lastPlayerId = root[y-1].playerId;
@@ -244,7 +249,6 @@ pokerApp.factory('playerStatus', function() {
 
             console.log("------------");
             console.log("currentPlayer ID: " + root[currentPosition].playerId);
-            console.log(root[currentPosition]);
 
             var roundLive = setInterval(function() {
 
@@ -270,6 +274,8 @@ pokerApp.factory('playerStatus', function() {
                     // checks to see if lastPlayer has taken action
                     if($scope.lastPlayerId == root[currentPosition].playerId && $scope.table.countdown == 0){
 
+                        console.log("last player took action");
+
                         // if last player didn't act, they forfeit the hand, update live players
                         // has to be run here, else the game would immediately stop
                         // if(root[currentPosition].actionTaken == false || root[currentPosition].currentBet < $scope.table.currentBet){
@@ -292,7 +298,6 @@ pokerApp.factory('playerStatus', function() {
                             }
                         }
 
-                        console.log("Round set to finished");
                         roundFinished = true;
                     }
 
@@ -455,7 +460,8 @@ pokerApp.factory('playerStatus', function() {
             } else {
 
                 // determine winning hand
-                $scope.livePlayers[1].winner = true;
+                $scope.livePlayers[0].winner = true;
+                $scope.$apply();
                 return;
             }
 

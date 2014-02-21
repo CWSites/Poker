@@ -56,8 +56,8 @@
 			<h1>Let's Play!</h1>
 			<p class="lead">The <a href="rules.html">rules</a> are simple, No Limit Texas Hold'em</p>
 
-			<!-- myTurn folded playerBet playerRaise -->
-			<div class="pokerRoom" ng-class="{final:table.gameStatus==4, preFlop:table.gameStatus==0}">
+			<!-- myTurn folded playerBet playerRaise final -->
+			<div class="pokerRoom" ng-class="{preFlop:table.gameStatus==0}">
 				<div class="alert alert-warning" ng-class="{active:players[myPosition].turn==true || alert != ''}">
 					<div ng-class="{active:alert != ''}">
 						{{alert}}
