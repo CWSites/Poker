@@ -22,6 +22,9 @@ pokerApp.factory('playerStatus', function() {
             // reset all players
             for(i=0; $scope.players.length > i; i++){
                 $scope.players[i].fold = false;
+                $scope.players[i].turn = false;
+                $scope.players[i].winner = false;
+                $scope.alert = '';
             }
 
             // TEST: make sure this works if less than 2 players
@@ -465,10 +468,9 @@ pokerApp.factory('playerStatus', function() {
                 $scope.$apply();
             }
 
-            return;
-
             // move button & blinds
-            // playerInfo.moveButtonBlinds($scope);
+            playerInfo.moveButtonBlinds($scope);
+            return;
         }
     };
 
@@ -482,8 +484,8 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
     $scope.table = {
         'pot': 0,
         'currentBet': 0,
-        'timer': 3,
-        'countdown': 3,
+        'timer': 1,
+        'countdown': 1,
         'smallBlind': 25,
         'gameStatus': 0,
         'cards': [
@@ -724,7 +726,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             'rank': 9,
             'name': 'Player Eight',
             'imageUrl': 'bootstrap/img/ichigo.jpg',
-            'chips': 0,
+            'chips': 200,
             'button': false,
             'blind': '',
             'firstAct': false,
