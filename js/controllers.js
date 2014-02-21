@@ -9,7 +9,42 @@ pokerApp.factory('playerStatus', function() {
 
         // TO-DO: Write logic for random seating and empty seats
 
-        // moveButtonBlinds has already run
+        // move button position & blinds for big/small
+        // makes changes to players json
+        moveButtonBlinds: function($scope){
+            var root = $scope.players,
+            buttonMoved = false,
+            blindsMoved = false,
+            firstActMoved = false;
+
+            for(i=0; root.length > i; i++){
+
+                if(root[i].button == true && buttonMoved == false){
+                    root[i].button = false;
+                    root[i+1].button = true;
+                    buttonMoved = true;
+                }
+
+                if (root[i].blind == "small" && blindsMoved == false){
+                    root[i].blind = "";
+                    root[i+1].blind = "small";
+                    root[i+2].blind = "big";
+                    blindsMoved = true;
+                }
+
+                if(root[i].firstAct == true && firstActMoved == false){
+                    root[i].firstAct = false;
+                    root[i+1].firstAct = true;
+                    firstActMoved = true;
+                }
+            }
+
+            // start next hand once button and blinds have moved
+            if(buttonMoved == true && blindsMoved == true && firstActMoved == true){
+                playerInfo.resetTable($scope);
+            }
+        },
+
         // reseting variables for next hand
         // calling functions asyncronously
         resetTable: function($scope){
@@ -56,35 +91,6 @@ pokerApp.factory('playerStatus', function() {
             console.log("setLivePlayers was called");
             console.log($scope.livePlayers.length + " players are live");
             console.log($scope.livePlayers);
-        },
-
-        // move button position & blinds for big/small
-        // makes changes to players json
-        moveButtonBlinds: function($scope){
-            var root = $scope.players,
-            buttonMoved = false,
-            blindsMoved = false;
-
-            for(i=0; root.length > i; i++){
-
-                if(root[i].button == true && buttonMoved == false){
-                    root[i].button = false;
-                    root[i+1].button = true;
-                    buttonMoved = true;
-                }
-
-                if (root[i].blind == "small" && blindsMoved == false){
-                    root[i].blind = "";
-                    root[i+1].blind = "small";
-                    root[i+2].blind = "big";
-                    blindsMoved = true;
-                }
-            }
-
-            // start next hand once button and blinds have moved
-            if(buttonMoved == true && blindsMoved == true){
-                playerInfo.resetTable($scope);
-            }
         },
 
         // set button position & blinds for big/small
@@ -460,17 +466,27 @@ pokerApp.factory('playerStatus', function() {
             } else {
 
                 // determine winning hand
-
+                // right now is defaulted so I win each hand.
                 $scope.livePlayers[0].winner = true;
                 $scope.livePlayers[0].chips += $scope.table.pot;
+
                 $scope.table.pot = 0;
                 $scope.alert = root[i].name + " wins this hand!";
                 $scope.$apply();
             }
 
-            // move button & blinds
-            playerInfo.moveButtonBlinds($scope);
-            return;
+            $scope.alert = "3 seconds until the next hand"
+
+            setTimeout(function(){
+
+                // reset game status
+                $scope.table.gameStatus = 0;
+
+                // move button & blinds
+                playerInfo.moveButtonBlinds($scope);
+                return;
+
+            }, 3000);
         }
     };
 
