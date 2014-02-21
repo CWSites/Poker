@@ -56,8 +56,8 @@
 			<h1>Let's Play!</h1>
 			<p class="lead">The <a href="rules.html">rules</a> are simple, No Limit Texas Hold'em</p>
 
-			<!-- myTurn folded playerBet playerRaise final -->
-			<div class="pokerRoom" ng-class="{preFlop:table.gameStatus==0}">
+			<!-- myTurn folded playerBet playerRaise -->
+			<div class="pokerRoom" ng-class="{preFlop:table.gameStatus==0, final:table.gameStatus==4}">
 				<div class="alert alert-warning" ng-class="{active:players[myPosition].turn==true || alert != ''}">
 					<div ng-class="{active:alert != ''}">
 						{{alert}}
@@ -75,7 +75,8 @@
 							cardPreFlop:table.gameStatus==0,
 							cardFlop:table.gameStatus==1,
 							cardTurn:table.gameStatus==2,
-							cardRiver:table.gameStatus==3}">
+							cardRiver:table.gameStatus==3,
+							final:table.gameStatus==4}">
 						<li ng-repeat="card in table.cards">
 							{{table.cards[$index].cardNum}}<i class="symbol {{table.cards[$index].cardSuit}}"></i>
 						</li>
@@ -96,6 +97,10 @@
 							bigBlind:player.blind=='big'}">
 						<i class="icon more_items"></i>
 						<img src="{{player.imageUrl}}" alt="{{player.name}}" class="img-circle img-player">
+						<ol class="pokerCards showHand list-unstyled">
+							<li>{{player.hand[0].cardNum}}<i class="symbol {{player.hand[0].cardSuit}}"></i></li>
+							<li>{{player.hand[1].cardNum}}<i class="symbol {{player.hand[1].cardSuit}}"></i></li>
+						</ol>
 						<span class="bet bottom-seat"
 							ng-class="{display:(player.id==myPosition && player.currentBet != 0 && player.callBetRaise == true) || player.currentBet != 0}">
 							{{player.currentBet}}

@@ -289,7 +289,6 @@ pokerApp.factory('playerStatus', function() {
                             // clear timer and call findWinner
                             if($scope.livePlayers.length < 2){
 
-                                $scope.table.gameStatus = 4;
                                 playerInfo.findWinner($scope);
 
                                 // stop timer & exit
@@ -341,7 +340,6 @@ pokerApp.factory('playerStatus', function() {
                         // find the winner and do things
                         } else {
 
-                            $scope.table.gameStatus = 4;
                             playerInfo.findWinner($scope);
 
                             // stop timer & exit
@@ -369,7 +367,6 @@ pokerApp.factory('playerStatus', function() {
                             // clear timer and call findWinner
                             if($scope.livePlayers.length < 2){
 
-                                $scope.table.gameStatus = 4;
                                 playerInfo.findWinner($scope);
 
                                 // stop timer & exit
@@ -460,10 +457,15 @@ pokerApp.factory('playerStatus', function() {
             } else {
 
                 // determine winning hand
+
                 $scope.livePlayers[0].winner = true;
+                $scope.livePlayers[0].chips += $scope.table.pot;
+                $scope.table.pot = 0;
+                $scope.alert = root[i].name + " wins this hand!";
                 $scope.$apply();
-                return;
             }
+
+            return;
 
             // move button & blinds
             // playerInfo.moveButtonBlinds($scope);
