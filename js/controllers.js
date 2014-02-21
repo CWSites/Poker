@@ -17,6 +17,8 @@ pokerApp.factory('playerStatus', function() {
             blindsMoved = false,
             firstActMoved = false;
 
+            console.log("-- moveButtonBlinds was called --");
+
             for(i=0; root.length > i; i++){
 
                 if(root[i].button == true && buttonMoved == false){
@@ -54,6 +56,8 @@ pokerApp.factory('playerStatus', function() {
             $scope.winner = {}
             $scope.livePlayers = [];
 
+            console.log("-- resetTable was called --");
+
             // reset all players
             for(i=0; $scope.players.length > i; i++){
                 $scope.players[i].fold = false;
@@ -88,7 +92,7 @@ pokerApp.factory('playerStatus', function() {
 
             $scope.livePlayers = $scope.livePlayers.concat($scope.players);
 
-            console.log("setLivePlayers was called");
+            console.log("-- setLivePlayers was called --");
             console.log($scope.livePlayers.length + " players are live");
             console.log($scope.livePlayers);
         },
@@ -136,6 +140,8 @@ pokerApp.factory('playerStatus', function() {
 
             $scope.firstPlayerId = 0;
             $scope.lastPlayerId = 0;
+
+            console.log("-- findFirstLastPlayer was called --");
 
             for(i=0; players.length > i; i++){
 
@@ -243,7 +249,7 @@ pokerApp.factory('playerStatus', function() {
             // reset player timer
             $scope.table.countdown = $scope.table.timer;
 
-            console.log("gameTimer called");
+            console.log("-- gameTimer called --");
 
             // reset player actionTaken
             // set current position to firstPlayerId
@@ -431,6 +437,8 @@ pokerApp.factory('playerStatus', function() {
             var root = $scope.livePlayers,
             roundTotal = 0;
 
+            console.log("-- findWinner was called --");
+
             // reset player turn
             for(i=0; root.length > i; i++){
                 $scope.players[i].turn = false;
@@ -450,8 +458,6 @@ pokerApp.factory('playerStatus', function() {
             $scope.table.currentBet = 0;
             roundTotal = 0;
 
-            console.log("findWinner was called");
-
             if(root.length < 2){
                 for(i=0; root.length > i; i++){
                     if(root[i].fold == false){
@@ -459,7 +465,7 @@ pokerApp.factory('playerStatus', function() {
                         $scope.livePlayers[i].chips += $scope.table.pot;
                         $scope.table.pot = 0;
                         $scope.winner = root[i];
-                        $scope.alert = root[i].name + " wins this hand!";
+                        $scope.alert = root[i].name + " wins this hand! 3 seconds until the next hand.";
                         $scope.$apply();
                     }
                 }
@@ -471,11 +477,9 @@ pokerApp.factory('playerStatus', function() {
                 $scope.livePlayers[0].chips += $scope.table.pot;
 
                 $scope.table.pot = 0;
-                $scope.alert = root[i].name + " wins this hand!";
+                $scope.alert = root[i].name + " wins this hand! 3 seconds until the next hand.";
                 $scope.$apply();
             }
-
-            $scope.alert = "3 seconds until the next hand"
 
             setTimeout(function(){
 
