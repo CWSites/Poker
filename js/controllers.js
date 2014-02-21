@@ -136,6 +136,9 @@ pokerApp.factory('playerStatus', function() {
                     $scope.firstPlayerId = root[i].playerId;
                     $scope.lastPlayerId = root[i - 1].playerId;
 
+                    // set player's turn to true
+                    $scope.livePlayers[i].turn = true;
+
                     console.log("firstActID: " + root[i].playerId);
                     console.log("lastPlayer ID: " + $scope.lastPlayerId);
 
@@ -160,6 +163,9 @@ pokerApp.factory('playerStatus', function() {
                                 // player immediately after button is first to act
                                 $scope.lastPlayerId = $scope.buttonId;
                                 $scope.firstPlayerId = root[y+1].playerId;
+
+                                // set player's turn to true
+                                $scope.livePlayers[y+1].turn = true;
 
                                 // once found, make a call to gameTimer to activate the round & exit
                                 playerInfo.gameTimer($scope);
@@ -201,7 +207,7 @@ pokerApp.factory('playerStatus', function() {
                                 }
 
                                 // once found, reset the timer & make a call to gameTimer to activate the next round & exit
-                                $scope.table.countdown = $scope.table.timer;
+                                $scope.table.countdown = $scope.table.timer + 1;
                                 playerInfo.gameTimer($scope);
                                 return;
                             }
@@ -238,10 +244,9 @@ pokerApp.factory('playerStatus', function() {
 
             console.log("------------");
             console.log("currentPlayer ID: " + root[currentPosition].playerId);
+            console.log(root[currentPosition]);
 
             var roundLive = setInterval(function() {
-
-                console.log("timer: " + $scope.table.countdown);
 
                 if($scope.table.gameStatus == 4 || root.length < 2){
 
@@ -251,6 +256,8 @@ pokerApp.factory('playerStatus', function() {
                     clearInterval(roundLive);
                     return;
                 }
+
+                console.log("timer: " + $scope.table.countdown);
 
                 // if player bets or raises then update table currentBet
                 if(root[currentPosition].actionTaken == true && root[currentPosition].currentBet > $scope.table.currentBet){
@@ -310,14 +317,21 @@ pokerApp.factory('playerStatus', function() {
                         roundTotal = 0;
 
                         // check to see if more than 1 player live
-                        if(root.length > 1 && $scope.table.gameStatus != 4){
+                        if(root.length > 1 && $scope.table.gameStatus != 3){
 
                             // update game status (preflop, flop, turn, river)
                             $scope.table.gameStatus += 1;
                             console.log("gameStatus: " + $scope.table.gameStatus);
 
+                            // no longer player's turn
+                            root[currentPosition].turn = false;
+
                             // At end of round, call findFirstLastPlayer again
                             playerInfo.findFirstLastPlayer($scope);
+
+                            // stop timer & exit
+                            clearInterval(roundLive);
+                            return;
 
                         // find the winner and do things
                         } else {
@@ -371,7 +385,7 @@ pokerApp.factory('playerStatus', function() {
                             // if player still in hand (array) then advance to next array position
                             // if player had folded, then they are removed from array, thus position stays the same
                             // if at end of list then loop around
-                            if(currentPosition == root.length){
+                            if(currentPosition+1 == root.length){
                                 currentPosition = 0;
                             } else {
                                 currentPosition = currentPosition + 1;
