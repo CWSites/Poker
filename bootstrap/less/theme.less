@@ -87,6 +87,7 @@
 			width: 12px;
 			background-size: 12px;
 		}
+
 	}
 	&.myHand {
 		width: 240px;
@@ -161,8 +162,16 @@
 		height: 110px;
 		text-align: center;
 		text-shadow: 1px 1px 1px @shadow;
-		// overflow: hidden;
 
+		&.empty {
+			img {
+				border-color: gray;
+				background: gray;
+			}
+			i.more_items, .chips, .name, .bet {
+				display: none;
+			}
+		}
 		&.me {
 			img {
 				border-color: black;
@@ -210,10 +219,6 @@
 			.showHand {
 				display: none;
 			}
-		}
-
-		&.empty {
-			display: none;
 		}
 
 		&:nth-child(2),
@@ -407,6 +412,9 @@ i.icon.coins {
 	&.final {
 		.showHand li {
 			display: inline-block;
+		}
+		i.more_items {
+			display: none;
 		}
 	}
 }

@@ -5,45 +5,88 @@ var pokerApp = angular.module('pokerApp', []);
 
 pokerApp.factory('playerStatus', function() {
 
-    var playerInfo = {
+    var gameInfo = {
 
         // TO-DO: Write logic for random seating and empty seats
 
         // move button position & blinds for big/small
         // makes changes to players json
         moveButtonBlinds: function($scope){
-            var root = $scope.players,
+            var seat = $scope.table.seats,
+            length = seat.length,
             buttonMoved = false,
             blindsMoved = false,
-            firstActMoved = false;
+            firstActMoved = false,
+            buttonPosition = 0,
+            smallPosition = 0,
+            firstActPosition = 0,
+            i = 0, x = 0;
 
             console.log("-- moveButtonBlinds was called --");
 
-            for(i=0; root.length > i; i++){
+            for(; i<length; i++){
 
-                if(root[i].button == true && buttonMoved == false){
-                    root[i].button = false;
-                    root[i+1].button = true;
+                if(seat[i].button == true && buttonMoved == false){
+                    var x = 0;
+                    seat[i].button = false;
+
+                    // loops to beginning of array if "i" is end of array
+                    if(i+1 == length){
+                        x = 0;
+                    } else {
+                        x = i+1;
+                    }
+                    seat[x].button = true;
                     buttonMoved = true;
+                    console.log("button moved");
                 }
 
-                if (root[i].blind == "small" && blindsMoved == false){
-                    root[i].blind = "";
-                    root[i+1].blind = "small";
-                    root[i+2].blind = "big";
-                    blindsMoved = true;
+                if(seat[i].blind == "small" && blindsMoved == false){
+                    seat[i].blind = "";
+
+                    // loops to beginning of array if "i" is end of array
+                    if(i+1 == length){
+                        smallPosition = 0;
+                    } else {
+                        smallPosition = i+1;
+                    }
+                    seat[smallPosition].blind = "small";
+                    console.log("small blind moved");
+
+                    // loops to beginning of array if "i" is end of array
+                    if(i+2 >= length){
+                        bigPosition = 0;
+                    } else {
+                        bigPosition = i+2;
+                    }
+
+                    for(x=bigPosition; x<length; x++){
+                        if(seat[x].playerId != 'dead'){
+                            seat[x].blind = "big";
+                            blindsMoved = true;
+                            console.log("big blind moved");
+                        }
+                    }
                 }
 
-                if(root[i].firstAct == true && firstActMoved == false){
-                    root[i].firstAct = false;
-                    root[i+1].firstAct = true;
+                if(seat[i].firstAct == true && firstActMoved == false){
+                    seat[i].firstAct = false;
+
+                    // loops to beginning of array if "i" is end of array
+                    if(i+1 == length){
+                        firstActPosition = 0;
+                    } else {
+                        firstActPosition = i+1;
+                    }
+                    seat[firstActPosition].firstAct = true;
                     firstActMoved = true;
+                    console.log("first to act moved");
                 }
             }
 
             // start next hand once button and blinds have moved
             if(buttonMoved == true && blindsMoved == true && firstActMoved == true){
-                playerInfo.resetTable($scope);
+                gameInfo.resetTable($scope);
             }
         },
 
@@ -59,23 +102,24 @@ pokerApp.factory('playerStatus', function() {
             console.log("-- resetTable was called --");
 
             // reset all players
-            for(i=0; $scope.players.length > i; i++){
-                $scope.players[i].fold = false;
-                $scope.players[i].turn = false;
-                $scope.players[i].winner = false;
+            for(i=0; $scope.table.seats.length > i; i++){
+                $scope.table.seats[i].fold = false;
+                $scope.table.seats[i].turn = false;
+                $scope.table.seats[i].winner = false;
                 $scope.alert = '';
             }
 
             // TEST: make sure this works if less than 2 players
-            if($scope.players.length > 1){
+            if($scope.table.seats.length > 1){
 
-                playerInfo.setLivePlayers($scope);
-                playerInfo.setButtonBlinds($scope);
-                playerInfo.findFirstLastPlayer($scope);
+                gameInfo.setLivePlayers($scope);
+                gameInfo.setButtonBlinds($scope);
+                gameInfo.findFirstLastPlayer($scope);
 
             } else {
 
                 // TEST: make sure this alert displays
+                // currently doesn't work, need a minimum of 2 players
                 $scope.alert = "There aren't enough players. Invite your friends!"
             }
         },
@@ -84,13 +128,19 @@ pokerApp.factory('playerStatus', function() {
         setLivePlayers: function($scope){
 
             // Remove anyone that doesn't have chips from the table
-            for(i=0; $scope.players.length > i; i++){
-                if($scope.players[i].chips == 0){
-                    $scope.players.splice(i, 1);
+            for(i=0; $scope.table.seats.length > i; i++){
+                if($scope.table.seats[i].chips == 0){
+                    $scope.table.seats.splice(i, 1, {"playerId":'dead'});
                 }
             }
 
-            $scope.livePlayers = $scope.livePlayers.concat($scope.players);
+            $scope.livePlayers = $scope.livePlayers.concat($scope.table.seats);
+            // Remove dead players from live players
+            for(i=0; $scope.livePlayers.length > i; i++){
+                if($scope.livePlayers[i].playerId == 'dead'){
+                    $scope.livePlayers.splice(i, 1);
+                }
+            }
 
             console.log("-- setLivePlayers was called --");
             console.log($scope.livePlayers.length + " players are live");
@@ -100,32 +150,32 @@ pokerApp.factory('playerStatus', function() {
         // set button position & blinds for big/small
         // changes saved to players.json
         setButtonBlinds: function($scope){
-            var root = $scope.players,
+            var seats = $scope.table.seats,
             smallBlind = $scope.table.smallBlind,
             bigBlind = smallBlind * 2;
 
-            for(i=0; root.length > i; i++){
+            for(i=0; seats.length > i; i++){
                 // TO-DO:
                 // - If player doesn't have enough then put all-in
                 // - Create all-in function
                 // - Write logic to check for dead button & dead small blind
 
                 // save button position in table array
-                if(root[i].button == true){
+                if(seats[i].button == true){
                     $scope.buttonPosition = i;
-                    $scope.buttonId = root[i].playerId;
+                    $scope.buttonId = seats[i].playerId;
                 }
 
-                if (root[i].blind == "small"){
-                    root[i].chips -= smallBlind;
-                    root[i].bet = smallBlind;
-                    root[i].currentBet = smallBlind;
+                if (seats[i].blind == "small"){
+                    seats[i].chips -= smallBlind;
+                    seats[i].bet = smallBlind;
+                    seats[i].currentBet = smallBlind;
                 }
 
-                if (root[i].blind == "big"){
-                    root[i].chips -= bigBlind;
-                    root[i].bet = bigBlind;
-                    root[i].currentBet = bigBlind;
+                if (seats[i].blind == "big"){
+                    seats[i].chips -= bigBlind;
+                    seats[i].bet = bigBlind;
+                    seats[i].currentBet = bigBlind;
                 }
             }
 
@@ -134,108 +184,126 @@ pokerApp.factory('playerStatus', function() {
 
         // find first to act, or first live player after button
         findFirstLastPlayer: function($scope){
-            var root = $scope.livePlayers,
-            players = $scope.players,
-            i = 0, p = 0, x = 0, y = 0, z = 0;
+            var livePlayers = $scope.livePlayers,
+            seats = $scope.table.seats,
+            lastPosition = 0,
+            x = 0;
 
             $scope.firstPlayerId = 0;
             $scope.lastPlayerId = 0;
 
             console.log("-- findFirstLastPlayer was called --");
 
-            for(i=0; players.length > i; i++){
+            if($scope.table.gameStatus == 0){
 
-                // find first to act if preFlop
-                if($scope.table.gameStatus == 0 && root[i].firstAct == true) {
+                // filter through seats (button and small can be dead)
+                for(i=0; i<livePlayers.length; i++){
 
-                    $scope.firstPlayerId = root[i].playerId;
-                    $scope.lastPlayerId = root[i - 1].playerId;
+                    // find first to act if preFlop
+                    if(livePlayers[i].firstAct == true) {
 
-                    // set player's turn to true
-                    $scope.livePlayers[i].turn = true;
-                    $scope.$apply();
+                        $scope.firstPlayerId = livePlayers[i].playerId;
 
-                    console.log("firstActID: " + root[i].playerId);
-                    console.log("lastPlayer ID: " + $scope.lastPlayerId);
-
-                    // once found, make a call to gameTimer to activate the round & exit
-                    playerInfo.gameTimer($scope);
-                    return;
-                }
-
-                // find first live player after button if after Flop
-                if($scope.table.gameStatus > 0) {
-
-                    // if the button didn't fold
-                    if(players[$scope.buttonPosition].fold == false){
-
-                        // loop through live players
-                        // find button position in live players array
-                        for(y = 0; root.length > y; y++){
-
-                            if(root[y].playerId == $scope.buttonId){
-
-                                // the button is the last to act
-                                // player immediately after button is first to act
-                                $scope.lastPlayerId = $scope.buttonId;
-                                $scope.firstPlayerId = root[y+1].playerId;
-
-                                // set player's turn to true
-                                $scope.livePlayers[y+1].turn = true;
-                                $scope.$apply();
-
-                                // once found, make a call to gameTimer to activate the round & exit
-                                playerInfo.gameTimer($scope);
-                                return;
-                            }
-
+                        // loops to beginning of array if necessary
+                        if(i == 0){
+                            x = seats.length - 1;
+                        } else {
+                            x = i-1;
                         }
+                        $scope.lastPlayerId = livePlayers[x].playerId;
 
-                    // if the button folded
-                    } else {
+                        // set player's turn to true
+                        $scope.livePlayers[i].turn = true;
+                        $scope.$apply();
 
-                        // start with button position & loop through table array
-                        for(x = 0; players.length > x; x++){
+                        console.log("firstActID: " + livePlayers[i].playerId);
+                        console.log("lastPlayer ID: " + $scope.lastPlayerId);
 
-                            // at end of array, loop if not done
-                            if((x + $scope.buttonPosition) < players.length){
-                                z = x + $scope.buttonPosition;
-                            } else if(z == 0){
-                                z += z;
-                            } else {
-                                z = 0;
-                            }
-
-                            // first live player after original button position
-                            if(players[z].fold == false && $scope.firstPlayerId == 0){
-
-                                $scope.firstPlayerId = players[z].playerId;
-                                console.log("firstPlayerId: " + players[z].playerId);
-                                console.log(players[z].playerId);
-
-                                // loop through live players & find first player in live players array
-                                for(y = 0; root.length > y; y++){
-
-                                    if(root[y].playerId == $scope.firstPlayerId){
-
-                                        $scope.livePlayers[y].turn = true;
-
-                                        // player immediately before first player is last to act
-                                        $scope.lastPlayerId = root[y-1].playerId;
-                                        console.log("lastPlayerId: " + root[y-1].playerId);
-                                    }
-                                }
-
-                                // once found, reset the timer & make a call to gameTimer to activate the next round & exit
-                                $scope.table.countdown = $scope.table.timer + 1;
-                                playerInfo.gameTimer($scope);
-                                return;
-                            }
-                        }
-
+                        // once found, make a call to gameTimer to activate the round & exit
+                        gameInfo.gameTimer($scope);
+                        return;
                     }
                 }
+            } else {
 
+                // if the button didn't fold && not dead button
+                if(seats[$scope.buttonPosition].fold == false && seats[$scope.buttonPosition].playerId != 'dead'){
+
+                    // loop through live players
+                    // find button position in live players array
+                    for(i=0; i<livePlayers.length; i++){
+
+                        if(livePlayers[i].playerId == $scope.buttonId){
+
+                            // the button is the last to act
+                            $scope.lastPlayerId = $scope.buttonId;
+
+                            // player immediately after button is first to act
+                            // button is at the end of the array, loop around for the first player
+                            if(i+1 == livePlayers.length){
+                                x = 0;
+                            } else {
+                                x = i+1;
+                            }
+
+                            $scope.firstPlayerId = livePlayers[x].playerId;
+
+                            // set player's turn to true
+                            $scope.livePlayers[x].turn = true;
+                            $scope.$apply();
+
+                            // once found, make a call to gameTimer to activate the round & exit
+                            gameInfo.gameTimer($scope);
+                            return;
+                        }
+                    }
+
+                // if the button folded or is dead
+                } else {
+
+                    // start with button position & loop through seats array
+                    for(i=$scope.buttonPosition; i < seats.length; i++){
+
+                        // at end of array, loop if not done
+                        if((i + $scope.buttonPosition) - 1 == seats.length){
+                            x = 0;
+                        } else {
+                            x = i;
+                        }
+
+                        // if player didn't fold and first player id hasn't been set yet
+                        if(seats[x].fold == false && $scope.firstPlayerId == 0){
+
+                            $scope.firstPlayerId = seats[x].playerId;
+                            console.log("firstPlayerId: " + seats[x].playerId);
+
+                            // loop through live players & find first player in live players array
+                            for(z=0; z < livePlayers.length; z++){
+
+                                if(livePlayers[z].playerId == $scope.firstPlayerId){
+
+                                    $scope.livePlayers[z].turn = true;
+
+                                    // at end of array, loop if not done
+                                    if(z == 0){
+                                        z = seats.length - 1;
+                                    } else {
+                                        z = z-1;
+                                    }
+
+                                    // player immediately before first player is last to act
+                                    $scope.lastPlayerId = livePlayers[z].playerId;
+                                    console.log("lastPlayerId: " + livePlayers[z].playerId);
+                                }
+                            }
+
+                            // once found, reset the timer & make a call to gameTimer to activate the next round & exit
+                            $scope.table.countdown = $scope.table.timer + 1;
+                            gameInfo.gameTimer($scope);
+                            return;
+                        }
+                    }
+                }
             }
         },
 
@@ -254,7 +322,7 @@ pokerApp.factory('playerStatus', function() {
             // reset player actionTaken
             // set current position to firstPlayerId
             for(i=0; root.length > i; i++){
-                $scope.players[i].actionTaken = false;
+                $scope.table.seats[i].actionTaken = false;
                 $scope.livePlayers[i].actionTaken = false;
 
                 if(root[i].playerId == $scope.firstPlayerId){
@@ -269,7 +337,7 @@ pokerApp.factory('playerStatus', function() {
 
                 if($scope.table.gameStatus == 4 || root.length < 2){
 
-                    playerInfo.findWinner($scope);
+                    gameInfo.findWinner($scope);
 
                     // stop timer & exit
                     clearInterval(roundLive);
@@ -284,7 +352,7 @@ pokerApp.factory('playerStatus', function() {
                 }
 
                 // when player timer is 0 || player folds || player checks, calls, bets or raises
-                if($scope.table.countdown == 0 || root[currentPosition].actionTaken == true || root[currentPosition].fold == true) {
+                if($scope.table.countdown == 0 || root[currentPosition].playerId == 'dead' || root[currentPosition].actionTaken == true || root[currentPosition].fold == true) {
 
                     // checks to see if lastPlayer has taken action
                     if($scope.lastPlayerId == root[currentPosition].playerId && $scope.table.countdown == 0){
@@ -304,7 +372,7 @@ pokerApp.factory('playerStatus', function() {
                             // clear timer and call findWinner
                             if($scope.livePlayers.length < 2){
 
-                                playerInfo.findWinner($scope);
+                                gameInfo.findWinner($scope);
 
                                 // stop timer & exit
                                 clearInterval(roundLive);
@@ -323,10 +391,10 @@ pokerApp.factory('playerStatus', function() {
                         console.log("------------");
 
                         // add up bets
-                        for(i=0; $scope.players.length > i; i++){
-                            roundTotal += +$scope.players[i].currentBet;
-                            $scope.players[i].currentBet = 0;
-                            $scope.players[i].bet = 0;
+                        for(i=0; $scope.table.seats.length > i; i++){
+                            roundTotal += +$scope.table.seats[i].currentBet;
+                            $scope.table.seats[i].currentBet = 0;
+                            $scope.table.seats[i].bet = 0;
                             $scope.$apply();
                         }
 
@@ -346,7 +414,7 @@ pokerApp.factory('playerStatus', function() {
                             root[currentPosition].turn = false;
 
                             // At end of round, call findFirstLastPlayer again
-                            playerInfo.findFirstLastPlayer($scope);
+                            gameInfo.findFirstLastPlayer($scope);
 
                             // stop timer & exit
                             clearInterval(roundLive);
@@ -355,7 +423,7 @@ pokerApp.factory('playerStatus', function() {
                         // find the winner and do things
                         } else {
 
-                            playerInfo.findWinner($scope);
+                            gameInfo.findWinner($scope);
 
                             // stop timer & exit
                             clearInterval(roundLive);
@@ -382,7 +450,7 @@ pokerApp.factory('playerStatus', function() {
                             // clear timer and call findWinner
                             if($scope.livePlayers.length < 2){
 
-                                playerInfo.findWinner($scope);
+                                gameInfo.findWinner($scope);
 
                                 // stop timer & exit
                                 clearInterval(roundLive);
@@ -441,15 +509,15 @@ pokerApp.factory('playerStatus', function() {
 
             // reset player turn
             for(i=0; root.length > i; i++){
-                $scope.players[i].turn = false;
+                $scope.table.seats[i].turn = false;
                 $scope.livePlayers[i].turn = false;
             }
 
             // add up bets
-            for(i=0; $scope.players.length > i; i++){
-                roundTotal += +$scope.players[i].currentBet;
-                $scope.players[i].currentBet = 0;
-                $scope.players[i].bet = 0;
+            for(i=0; $scope.table.seats.length > i; i++){
+                roundTotal += +$scope.table.seats[i].currentBet;
+                $scope.table.seats[i].currentBet = 0;
+                $scope.table.seats[i].bet = 0;
                 $scope.$apply();
             }
 
@@ -475,9 +543,10 @@ pokerApp.factory('playerStatus', function() {
                 // right now is defaulted so I win each hand.
                 $scope.livePlayers[0].winner = true;
                 $scope.livePlayers[0].chips += $scope.table.pot;
+                $scope.table.gameStatus = 4;
 
                 $scope.table.pot = 0;
-                $scope.alert = root[i].name + " wins this hand! 3 seconds until the next hand.";
+                $scope.alert = root[0].name + " wins this hand! 3 seconds until the next hand.";
                 $scope.$apply();
             }
 
@@ -487,14 +556,14 @@ pokerApp.factory('playerStatus', function() {
                 $scope.table.gameStatus = 0;
 
                 // move button & blinds
-                playerInfo.moveButtonBlinds($scope);
+                gameInfo.moveButtonBlinds($scope);
                 return;
 
             }, 3000);
         }
     };
 
-    return playerInfo;
+    return gameInfo;
 
 });
 
@@ -529,271 +598,270 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'cardNum':'10',
                 'cardSuit':'heart'
             }
+        ],
+        'seats': [
+            {
+                'playerId': 132,
+                'rank': 1,
+                'name': 'Player X',
+                'imageUrl': 'bootstrap/img/ichigo.jpg',
+                'chips': 1500,
+                'button': false,
+                'blind': '',
+                'firstAct': false,
+                'fold': false,
+                'actionTaken': false,
+                'winner': false,
+                'turn': false,
+                'currentBet': 0,
+                'bet': '',
+                'hand': [
+                    {
+                        'cardNum':'3',
+                        'cardSuit':'heart'
+                    },
+                    {
+                        'cardNum':'10',
+                        'cardSuit':'diamond'
+                    }
+                ]
+            },
+            {
+                'playerId': 7734,
+                'rank': 2,
+                'name': 'Player One',
+                'imageUrl': 'bootstrap/img/ichigo.jpg',
+                'chips': 1000,
+                'button': false,
+                'blind': '',
+                'firstAct': false,
+                'fold': false,
+                'actionTaken': false,
+                'winner': false,
+                'turn': false,
+                'currentBet': 0,
+                'bet': '',
+                'hand': [
+                    {
+                        'cardNum':'J',
+                        'cardSuit':'diamond'
+                    },
+                    {
+                        'cardNum':'10',
+                        'cardSuit':'club'
+                    }
+                ]
+            },
+            {
+                'playerId': 7734,
+                'rank': 2,
+                'name': 'Player Two',
+                'imageUrl': 'bootstrap/img/ichigo.jpg',
+                'chips': 0,
+                'button': false,
+                'blind': '',
+                'firstAct': false,
+                'fold': false,
+                'actionTaken': false,
+                'winner': false,
+                'turn': false,
+                'currentBet': 0,
+                'bet': '',
+                'hand': [
+                    {
+                        'cardNum':'J',
+                        'cardSuit':'diamond'
+                    },
+                    {
+                        'cardNum':'10',
+                        'cardSuit':'club'
+                    }
+                ]
+            },
+            {
+                'playerId': 17,
+                'rank': 4,
+                'name': 'Player Three',
+                'imageUrl': 'bootstrap/img/ichigo.jpg',
+                'chips': 1000,
+                'button': false,
+                'blind': '',
+                'firstAct': false,
+                'fold': false,
+                'actionTaken': false,
+                'winner': false,
+                'turn': false,
+                'currentBet': 0,
+                'bet': '',
+                'hand': [
+                    {
+                        'cardNum':'2',
+                        'cardSuit':'diamond'
+                    },
+                    {
+                        'cardNum':'7',
+                        'cardSuit':'club'
+                    }
+                ]
+            },
+            {
+                'playerId': 24,
+                'rank': 5,
+                'name': 'Player Four',
+                'imageUrl': 'bootstrap/img/ichigo.jpg',
+                'chips': 1000,
+                'button': false,
+                'blind': '',
+                'firstAct': false,
+                'fold': false,
+                'actionTaken': false,
+                'winner': false,
+                'turn': false,
+                'currentBet': 0,
+                'bet': '',
+                'hand': [
+                    {
+                        'cardNum':'A',
+                        'cardSuit':'diamond'
+                    },
+                    {
+                        'cardNum':'A',
+                        'cardSuit':'club'
+                    }
+                ]
+            },
+            {
+                'playerId': 60,
+                'rank': 6,
+                'name': 'Player Five',
+                'imageUrl': 'bootstrap/img/ichigo.jpg',
+                'chips': 1000,
+                'button': false,
+                'blind': '',
+                'firstAct': false,
+                'fold': false,
+                'actionTaken': false,
+                'winner': false,
+                'turn': false,
+                'currentBet': 0,
+                'bet': '',
+                'hand': [
+                    {
+                        'cardNum':'5',
+                        'cardSuit':'club'
+                    },
+                    {
+                        'cardNum':'6',
+                        'cardSuit':'club'
+                    }
+                ]
+            },
+            {
+                'playerId': 69,
+                'rank': 7,
+                'name': 'Player Six',
+                'imageUrl': 'bootstrap/img/ichigo.jpg',
+                'chips': 1000,
+                'button': true,
+                'blind': '',
+                'firstAct': false,
+                'fold': false,
+                'actionTaken': false,
+                'winner': false,
+                'turn': false,
+                'currentBet': 0,
+                'bet': '',
+                'hand': [
+                    {
+                        'cardNum':'8',
+                        'cardSuit':'diamond'
+                    },
+                    {
+                        'cardNum':'9',
+                        'cardSuit':'club'
+                    }
+                ]
+            },
+            {
+                'playerId': 101,
+                'rank': 8,
+                'name': 'Player Seven',
+                'imageUrl': 'bootstrap/img/ichigo.jpg',
+                'chips': 900,
+                'button': false,
+                'blind': 'small',
+                'firstAct': false,
+                'fold': false,
+                'actionTaken': false,
+                'winner': false,
+                'turn': false,
+                'currentBet': 0,
+                'bet': '',
+                'hand': [
+                    {
+                        'cardNum':'2',
+                        'cardSuit':'spade'
+                    },
+                    {
+                        'cardNum':'2',
+                        'cardSuit':'diamond'
+                    }
+                ]
+            },
+            {
+                'playerId': 941,
+                'rank': 9,
+                'name': 'Player Eight',
+                'imageUrl': 'bootstrap/img/ichigo.jpg',
+                'chips': 200,
+                'button': false,
+                'blind': 'big',
+                'firstAct': false,
+                'fold': false,
+                'actionTaken': false,
+                'winner': false,
+                'turn': false,
+                'currentBet': 0,
+                'bet': '',
+                'hand': [
+                    {
+                        'cardNum':'8',
+                        'cardSuit':'club'
+                    },
+                    {
+                        'cardNum':'8',
+                        'cardSuit':'spade'
+                    }
+                ]
+            },
+            {
+                'playerId': 82,
+                'rank': 10,
+                'name': 'Player Nine',
+                'imageUrl': 'bootstrap/img/ichigo.jpg',
+                'chips': 800,
+                'button': false,
+                'blind': '',
+                'firstAct': true,
+                'fold': false,
+                'actionTaken': false,
+                'winner': false,
+                'turn': false,
+                'currentBet': 0,
+                'bet': '',
+                'hand': [
+                    {
+                        'cardNum':'J',
+                        'cardSuit':'spade'
+                    },
+                    {
+                        'cardNum':'J',
+                        'cardSuit':'heart'
+                    }
+                ]
+            }
         ]
     }
-
-    $scope.players = [
-        {
-            'playerId': 132,
-            'rank': 1,
-            'name': 'Player X',
-            'imageUrl': 'bootstrap/img/ichigo.jpg',
-            'chips': 1500,
-            'button': false,
-            'blind': '',
-            'firstAct': false,
-            'fold': false,
-            'actionTaken': false,
-            'winner': false,
-            'turn': false,
-            'currentBet': 0,
-            'bet': '',
-            'hand': [
-                {
-                    'cardNum':'3',
-                    'cardSuit':'heart'
-                },
-                {
-                    'cardNum':'10',
-                    'cardSuit':'diamond'
-                }
-            ]
-        },
-        {
-            'playerId': 7734,
-            'rank': 2,
-            'name': 'Player One',
-            'imageUrl': 'bootstrap/img/ichigo.jpg',
-            'chips': 1000,
-            'button': false,
-            'blind': '',
-            'firstAct': false,
-            'fold': false,
-            'actionTaken': false,
-            'winner': false,
-            'turn': false,
-            'currentBet': 0,
-            'bet': '',
-            'hand': [
-                {
-                    'cardNum':'J',
-                    'cardSuit':'diamond'
-                },
-                {
-                    'cardNum':'10',
-                    'cardSuit':'club'
-                }
-            ]
-        },
-        {
-            'playerId': 25,
-            'rank': 3,
-            'name': 'Player Two',
-            'imageUrl': 'bootstrap/img/ichigo.jpg',
-            'chips': 1250,
-            'button': true,
-            'blind': '',
-            'firstAct': false,
-            'fold': false,
-            'actionTaken': false,
-            'winner': false,
-            'turn': false,
-            'currentBet': 0,
-            'bet': '',
-            'hand': [
-                {
-                    'cardNum':'A',
-                    'cardSuit':'heart'
-                },
-                {
-                    'cardNum':'K',
-                    'cardSuit':'diamond'
-                }
-            ]
-        },
-        {
-            'playerId': 17,
-            'rank': 4,
-            'name': 'Player Three',
-            'imageUrl': 'bootstrap/img/ichigo.jpg',
-            'chips': 1000,
-            'button': false,
-            'blind': 'small',
-            'firstAct': false,
-            'fold': false,
-            'actionTaken': false,
-            'winner': false,
-            'turn': false,
-            'currentBet': 0,
-            'bet': '',
-            'hand': [
-                {
-                    'cardNum':'2',
-                    'cardSuit':'diamond'
-                },
-                {
-                    'cardNum':'7',
-                    'cardSuit':'club'
-                }
-            ]
-        },
-        {
-            'playerId': 24,
-            'rank': 5,
-            'name': 'Player Four',
-            'imageUrl': 'bootstrap/img/ichigo.jpg',
-            'chips': 1000,
-            'button': false,
-            'blind': 'big',
-            'firstAct': false,
-            'fold': false,
-            'actionTaken': false,
-            'winner': false,
-            'turn': false,
-            'currentBet': 0,
-            'bet': '',
-            'hand': [
-                {
-                    'cardNum':'A',
-                    'cardSuit':'diamond'
-                },
-                {
-                    'cardNum':'A',
-                    'cardSuit':'club'
-                }
-            ]
-        },
-        {
-            'playerId': 60,
-            'rank': 6,
-            'name': 'Player Five',
-            'imageUrl': 'bootstrap/img/ichigo.jpg',
-            'chips': 1000,
-            'button': false,
-            'blind': '',
-            'firstAct': true,
-            'fold': false,
-            'actionTaken': false,
-            'winner': false,
-            'turn': true,
-            'currentBet': 0,
-            'bet': '',
-            'hand': [
-                {
-                    'cardNum':'5',
-                    'cardSuit':'club'
-                },
-                {
-                    'cardNum':'6',
-                    'cardSuit':'club'
-                }
-            ]
-        },
-        {
-            'playerId': 69,
-            'rank': 7,
-            'name': 'Player Six',
-            'imageUrl': 'bootstrap/img/ichigo.jpg',
-            'chips': 1000,
-            'button': false,
-            'blind': '',
-            'firstAct': false,
-            'fold': false,
-            'actionTaken': false,
-            'winner': false,
-            'turn': false,
-            'currentBet': 0,
-            'bet': '',
-            'hand': [
-                {
-                    'cardNum':'8',
-                    'cardSuit':'diamond'
-                },
-                {
-                    'cardNum':'9',
-                    'cardSuit':'club'
-                }
-            ]
-        },
-        {
-            'playerId': 101,
-            'rank': 8,
-            'name': 'Player Seven',
-            'imageUrl': 'bootstrap/img/ichigo.jpg',
-            'chips': 900,
-            'button': false,
-            'blind': '',
-            'firstAct': false,
-            'fold': false,
-            'actionTaken': false,
-            'winner': false,
-            'turn': false,
-            'currentBet': 0,
-            'bet': '',
-            'hand': [
-                {
-                    'cardNum':'2',
-                    'cardSuit':'spade'
-                },
-                {
-                    'cardNum':'2',
-                    'cardSuit':'diamond'
-                }
-            ]
-        },
-        {
-            'playerId': 941,
-            'rank': 9,
-            'name': 'Player Eight',
-            'imageUrl': 'bootstrap/img/ichigo.jpg',
-            'chips': 200,
-            'button': false,
-            'blind': '',
-            'firstAct': false,
-            'fold': false,
-            'actionTaken': false,
-            'winner': false,
-            'turn': false,
-            'currentBet': 0,
-            'bet': '',
-            'hand': [
-                {
-                    'cardNum':'8',
-                    'cardSuit':'club'
-                },
-                {
-                    'cardNum':'8',
-                    'cardSuit':'spade'
-                }
-            ]
-        },
-        {
-            'playerId': 82,
-            'rank': 10,
-            'name': 'Player Nine',
-            'imageUrl': 'bootstrap/img/ichigo.jpg',
-            'chips': 800,
-            'button': false,
-            'blind': '',
-            'firstAct': false,
-            'fold': false,
-            'actionTaken': false,
-            'winner': false,
-            'turn': false,
-            'currentBet': 0,
-            'bet': '',
-            'hand': [
-                {
-                    'cardNum':'J',
-                    'cardSuit':'spade'
-                },
-                {
-                    'cardNum':'J',
-                    'cardSuit':'heart'
-                }
-            ]
-        }
-    ];
 
     $scope.placeBet = false;
     $scope.firstPlayerId = 0;
@@ -804,7 +872,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
     $scope.alert = "";
     $scope.winner = {}
     $scope.livePlayers = [];
-    $scope.myBet = $scope.players[$scope.myPosition].bet;
+    $scope.myBet = $scope.table.seats[$scope.myPosition].bet;
 
     status.resetTable($scope);
 
