@@ -347,6 +347,7 @@ pokerApp.factory('playerStatus', function() {
 
                 if(players[i].playerId == $scope.firstPlayerId){
                     currentPosition = i;
+                    $scope.livePlayers[i].turn = true;
                 }
             }
 
@@ -389,8 +390,7 @@ pokerApp.factory('playerStatus', function() {
                             players[currentPosition].fold = true;
                             $scope.livePlayers.splice(currentPosition, 1);
 
-                            // if player folds and no more than 1 player live
-                            // clear timer and call findWinner
+                            // if player folds && only 1 live player - clear timer and call findWinner
                             if($scope.livePlayers.length < 2){
 
                                 gameInfo.findWinner($scope);
@@ -404,22 +404,23 @@ pokerApp.factory('playerStatus', function() {
                         roundFinished = true;
                     }
 
-                    // check to see if round has finished
-                    // when current player is the one right before the first player
+                    // check to see if round has finished -- when current position is last player
                     if(roundFinished == true){
 
                         console.log("Round Finished");
                         console.log("------------");
 
                         // add up bets
-                        for(i=0; $scope.table.seats.length > i; i++){
+                        if($scope.table.currentBet != 0){
+                            for(i=0; $scope.table.seats.length > i; i++){
 
-                            if($scope.table.seats[i].currentBet != 0 && $scope.table.seats[i].dead == false){
-                                roundTotal += $scope.table.seats[i].currentBet;
-                                $scope.table.seats[i].currentBet = 0;
-                                $scope.table.seats[i].bet = 0;
+                                if($scope.table.seats[i].currentBet != 0 && $scope.table.seats[i].dead == false){
+                                    roundTotal += $scope.table.seats[i].currentBet;
+                                    $scope.table.seats[i].currentBet = 0;
+                                    $scope.table.seats[i].bet = 0;
+                                }
+                                $scope.$apply();
                             }
-                            $scope.$apply();
                         }
 
                         // update pot
@@ -428,7 +429,7 @@ pokerApp.factory('playerStatus', function() {
                         roundTotal = 0;
 
                         // check to see if more than 1 player live
-                        if(length > 1 && $scope.table.gameStatus != 3){
+                        if($scope.livePlayers.length > 1 && $scope.table.gameStatus != 3){
 
                             // update game status (preflop, flop, turn, river)
                             $scope.table.gameStatus += 1;
