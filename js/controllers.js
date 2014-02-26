@@ -9,92 +9,6 @@ pokerApp.factory('playerStatus', function() {
 
         // TO-DO: Write logic for random seating and empty seats
 
-        // move button position & blinds for big/small
-        moveButtonBlinds: function($scope){
-            var players = $scope.livePlayers,
-            length = players.length,
-            buttonMoved = false,
-            blindsMoved = false,
-            firstActMoved = false,
-            buttonPosition = 0,
-            smallPosition = 0,
-            i = 0, x = 0;
-
-            console.log("-- moveButtonBlinds was called --");
-
-            for(; i<length; i++){
-
-                if(players[i].button == true && buttonMoved == false){
-                    x = 0;
-                    players[i].button = false;
-
-                    // loops to beginning of array if "i" is end of array
-                    if(i+1 == length){
-                        x = 0;
-                    } else {
-                        x = i+1;
-                    }
-
-                    players[x].button = true;
-                    buttonMoved = true;
-                    console.log("button moved");
-                }
-
-                if(players[i].blind == "small" && blindsMoved == false){
-                    players[i].blind = "";
-
-                    // loops to beginning of array if "i" is end of array
-                    if(i+1 == length){
-                        smallPosition = 0;
-                    } else {
-                        smallPosition = i+1;
-                    }
-
-                    players[smallPosition].blind = "small";
-                    console.log("small blind moved");
-
-                    // loops to beginning of array if "i" is end of array
-                    if(i+2 == length){
-                        bigPosition = 0;
-                    } else if(i+2 > length){
-                        bigPosition = 1;
-                    } else {
-                        bigPosition = i+2;
-                    }
-
-                    // make sure that big blind isn't dead
-                    for(x=bigPosition; x<length; x++){
-                        if(players[x].dead == false){
-                            players[x].blind = "big";
-                            blindsMoved = true;
-                            console.log("big blind moved");
-                        }
-                    }
-                }
-
-                if(players[i].firstAct == true && firstActMoved == false){
-                    x = 0;
-                    players[i].firstAct = false;
-
-                    // loops to beginning of array if "i" is end of array
-                    if(i+1 == length){
-                        x = 0;
-                    } else {
-                        x = i+1;
-                    }
-
-                    players[x].firstAct = true;
-                    firstActMoved = true;
-                    console.log("first to act moved");
-                }
-            }
-
-            // start next hand once button and blinds have moved
-            if(buttonMoved == true && blindsMoved == true && firstActMoved == true){
-                gameInfo.resetTable($scope);
-            }
-        },
-
         // reseting variables for next hand
         // calling functions asyncronously
         resetTable: function($scope){
@@ -118,6 +32,7 @@ pokerApp.factory('playerStatus', function() {
             if($scope.table.seats.length > 1){
 
                 gameInfo.setLivePlayers($scope);
+                gameInfo.moveButtonBlinds($scope);
                 gameInfo.setButtonBlinds($scope);
                 gameInfo.findFirstLastPlayer($scope);
 
@@ -126,6 +41,97 @@ pokerApp.factory('playerStatus', function() {
                 // TEST: make sure this alert displays
                 // currently doesn't work, need a minimum of 2 players
                 $scope.alert = "There aren't enough players. Invite your friends!"
+            }
+        },
+
+        // move button position & blinds for big/small
+        moveButtonBlinds: function($scope){
+            var players = $scope.livePlayers,
+            length = players.length,
+            buttonMoved = false,
+            blindsMoved = false,
+            firstActMoved = false,
+            buttonPosition = 0,
+            smallPosition = 0,
+            bigPosition = 0,
+            i = 0, x = 0;
+
+            console.log("-- moveButtonBlinds was called --");
+
+            // TO-DO: Change to WHILE loop and stop loop once all three are found
+            while(i<length){
+
+                if(players[i].button == true && buttonMoved == false){
+                    x = 0;
+                    $scope.livePlayers[i].button = false;
+
+                    // loops to beginning of array if "i" is end of array
+                    if(i+1 == length){
+                        x = 0;
+                    } else {
+                        x = i+1;
+                    }
+
+                    $scope.livePlayers[x].button = true;
+                    buttonMoved = true;
+                    console.log("button moved");
+                }
+
+                if(players[i].blind == "small" && blindsMoved == false){
+                    $scope.livePlayers[i].blind = "";
+
+                    // loops to beginning of array if "i" is end of array
+                    if(i+1 == length){
+                        smallPosition = 0;
+                    } else {
+                        smallPosition = i+1;
+                    }
+
+                    $scope.livePlayers[smallPosition].blind = "small";
+                    console.log("small blind moved");
+
+                    // loops to beginning of array if "i" is end of array
+                    if(i+2 == length){
+                        bigPosition = 0;
+                    } else if(i+2 > length){
+                        bigPosition = 1;
+                    } else {
+                        bigPosition = i+2;
+                    }
+
+                    // make sure that big blind isn't dead
+                    while(bigPosition < length && blindsMoved == false){
+                        if(players[bigPosition].dead == false){
+                            $scope.livePlayers[bigPosition].blind = "big";
+                            blindsMoved = true;
+                            console.log("big blind moved");
+                        }
+                    }
+                }
+
+                if(players[i].firstAct == true && firstActMoved == false){
+                    x = 0;
+                    $scope.livePlayers[i].firstAct = false;
+
+                    // loops to beginning of array if "i" is end of array
+                    if(i+1 == length){
+                        x = 0;
+                    } else {
+                        x = i+1;
+                    }
+
+                    $scope.livePlayers[x].firstAct = true;
+                    firstActMoved = true;
+                    console.log("first to act moved");
+                }
+
+                // increment while loop
+                i++;
+            }
+
+            // start next hand once button and blinds have moved
+            if(buttonMoved == true && blindsMoved == true && firstActMoved == true){
+                return;
             }
         },
 
@@ -240,7 +246,6 @@ pokerApp.factory('playerStatus', function() {
 
                         console.log("lastPlayerId: " + $scope.lastPlayerId);
                     }
-
                 }
 
             // POST FLOP ------
@@ -315,7 +320,6 @@ pokerApp.factory('playerStatus', function() {
 
             // once found, reset the timer & make a call to gameTimer to activate the next round & exit
             $scope.table.countdown = $scope.table.timer + 1;
-            // once found, make a call to gameTimer to activate the round & exit
             gameInfo.gameTimer($scope);
             return;
         },
@@ -485,7 +489,7 @@ pokerApp.factory('playerStatus', function() {
                             }
 
                             // if at the end of the array, then loop
-                            if(currentPosition+1 == length){
+                            if(currentPosition == $scope.livePlayers.length){
                                 currentPosition = 0;
                             } else {
                                 currentPosition = currentPosition;
@@ -575,8 +579,7 @@ pokerApp.factory('playerStatus', function() {
                 }
             } else {
 
-                // determine winning hand
-                // right now is defaulted so I win each hand.
+                // TO-DO: Write function to determine winning hand
                 $scope.livePlayers[0].winner = true;
                 $scope.livePlayers[0].chips += $scope.table.pot;
                 $scope.table.gameStatus = 4;
@@ -588,11 +591,9 @@ pokerApp.factory('playerStatus', function() {
 
             setTimeout(function(){
 
-                // reset game status
+                // reset game status & table for next hand
                 $scope.table.gameStatus = 0;
-
-                // move button & blinds
-                gameInfo.moveButtonBlinds($scope);
+                gameInfo.resetTable($scope);
                 return;
 
             }, 3000);
@@ -609,8 +610,8 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
     $scope.table = {
         'pot': 0,
         'currentBet': 0,
-        'timer': 5,
-        'countdown': 5,
+        'timer': 3,
+        'countdown': 3,
         'smallBlind': 25,
         'gameStatus': 0,
         'cards': [
