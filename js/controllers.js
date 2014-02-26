@@ -162,11 +162,6 @@ pokerApp.factory('playerStatus', function() {
                         $scope.livePlayers.splice(i, 1);
                     }
                 }
-
-                console.log("-- checking for dead seats --");
-                console.log($scope.livePlayers.length + " players are live");
-                console.log($scope.livePlayers);
-
             }
 
             console.log($scope.livePlayers.length + " players are live");
@@ -213,16 +208,17 @@ pokerApp.factory('playerStatus', function() {
         // find first to act, or first live player after button
         findFirstLastPlayer: function($scope){
             var players = $scope.livePlayers,
+            seats = $scope.table.seats,
             lastPosition = 0,
             buttonPosition = $scope.buttonPosition,
-            x = 0;
+            x = 0, i = 0;
 
             $scope.firstPlayerId = 0;
             $scope.lastPlayerId = 0;
 
             console.log("-- findFirstLastPlayer was called --");
 
-            // find first to act
+            // PRE FLOP ------
             if($scope.table.gameStatus == 0){
 
                 // loop through players to find first to act preflop
@@ -233,45 +229,89 @@ pokerApp.factory('playerStatus', function() {
 
                         $scope.firstPlayerId = players[i].playerId;
                         $scope.livePlayers[i].turn = true;
-                        $scope.$apply();
 
-                        console.log("firstActID: " + players[i].playerId);
+                        console.log("firstActID: " + $scope.firstPlayerId);
                     }
+
+                    // find last to act if preFlop
+                    if(players[i].blind == 'big') {
+
+                        $scope.lastPlayerId = players[i].playerId;
+
+                        console.log("lastPlayerId: " + $scope.lastPlayerId);
+                    }
+
                 }
 
+            // POST FLOP ------
             } else {
 
-                // AFTER FLOP THIS CAN BE USED TO FIND FIRST PLAYER
-                // start at button position and find first live player
-                if(buttonPosition+1 == players.length){
-                    x = 0;
-                } else {
-                    x = buttonPosition+1;
+                i=0;
+
+                // loop through and find the button
+                while(i < seats.length && $scope.firstPlayerId == 0 && $scope.lastPlayerId == 0){
+
+                    // BUTTON FOUND
+                    if(seats[i].playerId == $scope.buttonId){
+                        x = 0;
+
+                        // loop if at end of array
+                        if(i+1 == seats.length){
+                            x = 0;
+                        } else {
+                            x = i+1;
+                        }
+
+                        // start at button position and find first live player
+                        while (x <= seats.length && $scope.firstPlayerId == 0){
+
+                            if(seats[x].dead == false && seats[x].fold == false){
+                                $scope.firstPlayerId = seats[x].playerId;
+                                console.log("firstActID: " + $scope.firstPlayerId);
+                            }
+
+                            // loop to the beginning of the array if at the end.
+                            if(x+1 == seats.length){
+                                x = 0;
+                            } else {
+                                x++;
+                            }
+
+                        }
+
+                        // if button not dead and didn't fold, then set as last position
+                        if(seats[i].dead == false && seats[i].fold == false){
+                            $scope.lastPlayerId = seats[i].playerId;
+                            console.log("lastPlayer ID: " + $scope.lastPlayerId);
+
+                        // if button dead or folded, then start at button position and count backwards
+                        } else {
+
+                            // -1 so that first/last can't be same
+                            x = seats.length-1;
+
+                            while(x > 0 && $scope.lastPlayerId == 0){
+
+                                // count backwards through array, loop if reach beginning
+                                if(i == 0){
+                                    i = seats.length-1;
+                                } else {
+                                    i--;
+                                }
+
+                                if(seats[i].dead == false && seats[i].fold == false){
+                                    $scope.lastPlayerId = seats[i].playerId;
+                                    console.log("lastPlayerId: " + $scope.lastPlayerId);
+                                }
+
+                                x--;
+                            }
+                        }
+                    }
+
+                    i++;
                 }
-
-                $scope.firstAct = true;
-                $scope.firstPlayerId == players[x].playerId;
-
             }
-
-            // USED TO FIND LAST POSITION REGUARDLESS OF PRE/POST FLOP
-            // if button not dead and didn't fold, then set as last position
-            if(players[buttonPosition].dead == false && players[buttonPosition].fold == false){
-                $scope.lastPlayerId == players[buttonPosition].playerId;
-
-            // if button dead or folded, then -1 and set to last position
-            } else {
-
-                if(buttonPosition == 0){
-                    x = players.length-1;
-                } else {
-                    x = buttonPosition-1;
-                }
-
-                $scope.lastPlayerId == players[x].playerId;
-                console.log("lastPlayer ID: " + $scope.lastPlayerId);
-            }
-
 
             // once found, reset the timer & make a call to gameTimer to activate the next round & exit
             $scope.table.countdown = $scope.table.timer + 1;
@@ -296,7 +336,7 @@ pokerApp.factory('playerStatus', function() {
 
             // reset player actionTaken
             // set current position to firstPlayerId
-            for(i=0; i < $scope.livePlayers.length; i++){
+            for(i=0; i < length; i++){
 
                 // Remove the player from the array if they aren't the button
                 if(players[i].dead == true && players[i].button == false){
@@ -373,9 +413,12 @@ pokerApp.factory('playerStatus', function() {
 
                         // add up bets
                         for(i=0; $scope.table.seats.length > i; i++){
-                            roundTotal += +$scope.table.seats[i].currentBet;
-                            $scope.table.seats[i].currentBet = 0;
-                            $scope.table.seats[i].bet = 0;
+
+                            if($scope.table.seats[i].currentBet != 0 && $scope.table.seats[i].dead == false){
+                                roundTotal += $scope.table.seats[i].currentBet;
+                                $scope.table.seats[i].currentBet = 0;
+                                $scope.table.seats[i].bet = 0;
+                            }
                             $scope.$apply();
                         }
 
@@ -385,7 +428,7 @@ pokerApp.factory('playerStatus', function() {
                         roundTotal = 0;
 
                         // check to see if more than 1 player live
-                        if($scope.livePlayers.length > 1 && $scope.table.gameStatus != 3){
+                        if(length > 1 && $scope.table.gameStatus != 3){
 
                             // update game status (preflop, flop, turn, river)
                             $scope.table.gameStatus += 1;
@@ -441,7 +484,7 @@ pokerApp.factory('playerStatus', function() {
                             }
 
                             // if at the end of the array, then loop
-                            if(currentPosition+1 == $scope.livePlayers.length){
+                            if(currentPosition+1 == length){
                                 currentPosition = 0;
                             } else {
                                 currentPosition = currentPosition;
@@ -455,7 +498,7 @@ pokerApp.factory('playerStatus', function() {
                             // if player had folded, then they are removed from array, thus position stays the same
                             // if at end of list then loop around
 
-                            if(currentPosition+1 == $scope.livePlayers.length){
+                            if(currentPosition+1 == length){
                                 currentPosition = 0;
                             } else {
                                 currentPosition = currentPosition + 1;
@@ -491,38 +534,41 @@ pokerApp.factory('playerStatus', function() {
 
         // when hand is finished and more than 1 player live, find the winner
         findWinner: function($scope){
-            var root = $scope.livePlayers,
+            var players = $scope.livePlayers,
             roundTotal = 0;
 
             console.log("-- findWinner was called --");
 
             // reset player turn
-            for(i=0; root.length > i; i++){
+            for(i=0; i < players.length; i++){
                 $scope.table.seats[i].turn = false;
                 $scope.livePlayers[i].turn = false;
             }
 
             // add up bets
             for(i=0; $scope.table.seats.length > i; i++){
-                roundTotal += +$scope.table.seats[i].currentBet;
-                $scope.table.seats[i].currentBet = 0;
-                $scope.table.seats[i].bet = 0;
-                $scope.$apply();
+                if($scope.table.seats[i].currentBet != 0 && $scope.table.seats[i].dead == false){
+                    roundTotal += $scope.table.seats[i].currentBet;
+                    $scope.table.seats[i].currentBet = 0;
+                    $scope.table.seats[i].bet = 0;
+                }
             }
+
+            $scope.$apply();
 
             // update pot
             $scope.table.pot = $scope.table.pot + roundTotal;
             $scope.table.currentBet = 0;
             roundTotal = 0;
 
-            if(root.length < 2){
-                for(i=0; root.length > i; i++){
-                    if(root[i].fold == false){
+            if(players.length < 2){
+                for(i=0; players.length > i; i++){
+                    if(players[i].fold == false){
                         $scope.livePlayers[i].winner = true;
                         $scope.livePlayers[i].chips += $scope.table.pot;
                         $scope.table.pot = 0;
-                        $scope.winner = root[i];
-                        $scope.alert = root[i].name + " wins this hand! 3 seconds until the next hand.";
+                        $scope.winner = players[i];
+                        $scope.alert = players[i].name + " wins this hand! 3 seconds until the next hand.";
                         $scope.$apply();
                     }
                 }
@@ -535,7 +581,7 @@ pokerApp.factory('playerStatus', function() {
                 $scope.table.gameStatus = 4;
 
                 $scope.table.pot = 0;
-                $scope.alert = root[0].name + " wins this hand! 3 seconds until the next hand.";
+                $scope.alert = players[0].name + " wins this hand! 3 seconds until the next hand.";
                 $scope.$apply();
             }
 
@@ -730,7 +776,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'rank': 6,
                 'name': 'Player Five',
                 'imageUrl': 'bootstrap/img/ichigo.jpg',
-                'chips': 1000,
+                'chips': 0,
                 'button': false,
                 'blind': '',
                 'firstAct': false,

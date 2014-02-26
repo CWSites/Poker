@@ -7972,6 +7972,7 @@ td.visible-print {
   border-color: gray;
   background: gray;
 }
+.pokerPlayers > li.empty .showHand,
 .pokerPlayers > li.empty i.more_items,
 .pokerPlayers > li.empty .chips,
 .pokerPlayers > li.empty .name,
