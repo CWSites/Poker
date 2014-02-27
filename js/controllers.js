@@ -579,11 +579,9 @@ pokerApp.factory('playerStatus', function() {
                 }
             } else {
 
-                // TO-DO: Write function to determine winning hand
-                $scope.livePlayers[0].winner = true;
-                $scope.livePlayers[0].chips += $scope.table.pot;
-                $scope.table.gameStatus = 4;
+                gameInfo.bestHand($scope);
 
+                $scope.table.gameStatus = 4;
                 $scope.table.pot = 0;
                 $scope.alert = players[0].name + " wins this hand! 3 seconds until the next hand.";
                 $scope.$apply();
@@ -597,6 +595,150 @@ pokerApp.factory('playerStatus', function() {
                 return;
 
             }, 3000);
+        },
+
+        bestHand: function($scope){
+            var players = $scope.livePlayers,
+            board = $scope.table.cards,
+            playerInfo = {},
+            handCombined = [],
+            cardSuitsMatch = true, cardNumbers = false, handComplete = 0,
+            i = 0, x = 0, z = 0, hand = [], cardSuit = '',
+            winnerPosition = 0, winnerId = 0;
+
+            console.log("-- bestHand was called --");
+            console.log("cards on the board")
+            console.log(board);
+
+            for(i=0; i < players.length; i++){
+                var handCombinedNum = [], handCombinedSuit = []
+
+                // combine player hand & board
+                handCombined = board.concat(players[i].hand);
+
+                for(x=0; x < handCombined.length; x++){
+                    handCombinedNum.push(handCombined[x].cardNum);
+                    handCombinedSuit.push(handCombined[x].cardSuit);
+                }
+
+                // save info to playerInfo object
+                playerInfo = {
+                    'playerId': players[i].playerId,
+                    'handValue': 0,
+                    'handName': '',
+                    'handCombinedNum': handCombinedNum,
+                    'handCombinedSuit': handCombinedSuit
+                }
+
+                // add object to array of all live players
+                $scope.playerHands.push(playerInfo);
+            }
+
+            // determine what hands are available
+            for(i=0; i < players.length; i++){
+                hand = [], handComplete = 0, x = 0, cardNumbers = false, cardSuit = '', cardSuitsMatch = true;
+
+                console.log("------------------------");
+                console.log($scope.playerHands[i]);
+
+                // ROYAL FLUSH
+                if($scope.playerHands[i].handValue == 0){
+
+                    // find card Num and assign to "hand" variable
+                    hand.push($scope.playerHands[i].handCombinedNum.indexOf("A"));
+                    hand.push($scope.playerHands[i].handCombinedNum.indexOf("K"));
+                    hand.push($scope.playerHands[i].handCombinedNum.indexOf("Q"));
+                    hand.push($scope.playerHands[i].handCombinedNum.indexOf("J"));
+                    hand.push($scope.playerHands[i].handCombinedNum.indexOf("10"));
+
+                    console.log(hand);
+
+                    // all "numbers" found?
+                    handComplete = hand.indexOf(-1);
+                    if(handComplete == -1){
+                        cardNumbers = true;
+                    }
+
+                    // if numbers are good then compare suits
+                    if(cardNumbers == true){
+                        while(z < hand.length && cardSuitsMatch == true){
+
+                            console.log("card suit: " + cardSuit);
+                            // if suit hasn't been set, then set it
+                            if(cardSuit == ''){
+                                cardSuit = $scope.playerHands[i].handCombinedSuit[(hand[z])];
+
+                            // if previous suit doesn't match current suit then stop, player has a straight
+                            } else if(cardSuit != $scope.playerHands[i].handCombinedSuit[(hand[z])]){
+                                console.log($scope.playerHands[i].handCombinedSuit[(hand[z])]);
+                                cardSuitsMatch = false;
+                                $scope.playerHands[i].handValue = 5;
+                                $scope.playerHands[i].handName = "Straight";
+                            }
+
+                            z++;
+                        }
+
+                        // if all suits match and at end of loop, then player has royal flush
+                        if(cardSuitsMatch == true){
+                            $scope.playerHands[i].handValue = 10;
+                            $scope.playerHands[i].handName = "Royal Flush";
+                        }
+
+                    // if cards in order but not suited then automatically set to a STRAIGHT
+                    } else {
+                        $scope.playerHands[i].handValue = 5;
+                        $scope.playerHands[i].handName = "Straight";
+                    }
+                }
+
+                // for each player check
+                console.log("Player #" + i + " has a hand score of: " + $scope.playerHands[i].handValue);
+            }
+
+            // STRAIGHT FLUSH
+            // FOUR OF A KIND
+            // FULL HOUSE
+            // FLUSH
+            // STRAIGHT
+            // THREE OF A KIND
+            // TWO PAIRS
+            // ONE PAIR
+            // HIGH CARD
+
+
+            // loop through player hands and set player ID of the winner
+            for(i=0; i < $scope.playerHands.length; i++){
+
+                // if not first player and hand greater than next player
+                if(i == 0){
+                    winnerPosition = i;
+                    winnerId = $scope.playerHands[i].playerId;
+                } else if($scope.playerHands[i].handValue >= $scope.playerHands[winnerPosition].handValue){
+                    winnerPosition = i;
+                    winnerId = $scope.playerHands[i].playerId;
+
+                    // TO-DO: Write logic to determine which of the players have the better hand
+                    if($scope.playerHands[i].handValue == $scope.playerHands[winnerPosition].handValue){
+                        console.log("player #" + i + " and player #" + winnerPosition + " have the same hand strength");
+                    }
+                }
+            }
+
+            for(i=0; i < $scope.livePlayers.length; i++){
+                if(winnerId == $scope.livePlayers[i].playerId){
+
+                    // assign winner && reward chips
+                    $scope.livePlayers[i].winner = true;
+                    $scope.livePlayers[i].chips += $scope.table.pot;
+                    $scope.alert = $scope.livePlayers[i].name + " wins the hand with a " + $scope.playerHands[i].handName + "!";
+                }
+            }
+
+            console.log("Winner Position: " + winnerPosition);
+            console.log("Winner ID: " + winnerId);
+
+            return;
         }
     };
 
@@ -620,20 +762,20 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'cardSuit':'spade'
             },
             {
-                'cardNum':'K',
+                'cardNum':'9',
                 'cardSuit':'heart'
             },
             {
                 'cardNum':'Q',
-                'cardSuit':'diamond'
+                'cardSuit':'spade'
             },
             {
-                'cardNum':'J',
+                'cardNum':'8',
                 'cardSuit':'club'
             },
             {
                 'cardNum':'10',
-                'cardSuit':'heart'
+                'cardSuit':'spade'
             }
         ],
         'seats': [
@@ -655,12 +797,12 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'3',
-                        'cardSuit':'heart'
+                        'cardNum':'K',
+                        'cardSuit':'spade'
                     },
                     {
-                        'cardNum':'10',
-                        'cardSuit':'diamond'
+                        'cardNum':'J',
+                        'cardSuit':'spade'
                     }
                 ]
             },
@@ -919,8 +1061,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
     $scope.alert = "";
     $scope.winner = {}
     $scope.livePlayers = [];
+    $scope.playerHands = [];
     $scope.myBet = $scope.table.seats[$scope.myPosition].bet;
 
-    status.resetTable($scope);
+    // status.resetTable($scope);
+    status.setLivePlayers($scope);
+    status.bestHand($scope);
 
 }]);
