@@ -642,7 +642,7 @@ pokerApp.factory('playerStatus', function() {
                 console.log($scope.playerHands[i]);
 
                 // ROYAL FLUSH
-                if($scope.playerHands[i].handValue == 0){
+                if($scope.playerHands[i].handValue < 10){
 
                     // find card Num and assign to "hand" variable
                     hand.push($scope.playerHands[i].handCombinedNum.indexOf("A"));
@@ -663,14 +663,12 @@ pokerApp.factory('playerStatus', function() {
                     if(cardNumbers == true){
                         while(z < hand.length && cardSuitsMatch == true){
 
-                            console.log("card suit: " + cardSuit);
                             // if suit hasn't been set, then set it
                             if(cardSuit == ''){
                                 cardSuit = $scope.playerHands[i].handCombinedSuit[(hand[z])];
 
                             // if previous suit doesn't match current suit then stop, player has a straight
                             } else if(cardSuit != $scope.playerHands[i].handCombinedSuit[(hand[z])]){
-                                console.log($scope.playerHands[i].handCombinedSuit[(hand[z])]);
                                 cardSuitsMatch = false;
                                 $scope.playerHands[i].handValue = 5;
                                 $scope.playerHands[i].handName = "Straight";
@@ -692,20 +690,45 @@ pokerApp.factory('playerStatus', function() {
                     }
                 }
 
+                // STRAIGHT FLUSH
+                // FOUR OF A KIND
+                // FULL HOUSE
+
+                // FLUSH
+                if($scope.playerHands[i].handValue < 6){
+                    var heart = 0, diamond = 0, spade = 0, club = 0, z = 0;
+
+                    // if numbers are good then compare suits
+                    while(z < 7 && cardSuitsMatch == true){
+
+                        console.log("card suit: " + $scope.playerHands[i].handCombinedSuit[z]);
+
+                        $scope.playerHands[i].handCombinedSuit[z] == "heart" && heart++;
+                        $scope.playerHands[i].handCombinedSuit[z] == "diamond" && diamond++;
+                        $scope.playerHands[i].handCombinedSuit[z] == "spade" && spade++;
+                        $scope.playerHands[i].handCombinedSuit[z] == "club" && club++;
+
+                        z++;
+
+                        console.log("heart: " + heart + " spade: " + spade + " diamond: " + diamond + " club: " + club);
+
+                    }
+
+                    if(heart > 4 || diamond > 4 || spade > 4 || club > 4){
+                        $scope.playerHands[i].handValue = 6;
+                        $scope.playerHands[i].handName = "Flush";
+                    }
+                }
+
+                // STRAIGHT
+                // THREE OF A KIND
+                // TWO PAIRS
+                // ONE PAIR
+                // HIGH CARD
+
                 // for each player check
                 console.log("Player #" + i + " has a hand score of: " + $scope.playerHands[i].handValue);
             }
-
-            // STRAIGHT FLUSH
-            // FOUR OF A KIND
-            // FULL HOUSE
-            // FLUSH
-            // STRAIGHT
-            // THREE OF A KIND
-            // TWO PAIRS
-            // ONE PAIR
-            // HIGH CARD
-
 
             // loop through player hands and set player ID of the winner
             for(i=0; i < $scope.playerHands.length; i++){
@@ -802,7 +825,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                     },
                     {
                         'cardNum':'J',
-                        'cardSuit':'spade'
+                        'cardSuit':'heart'
                     }
                 ]
             },
@@ -990,8 +1013,8 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                         'cardSuit':'spade'
                     },
                     {
-                        'cardNum':'2',
-                        'cardSuit':'diamond'
+                        'cardNum':'3',
+                        'cardSuit':'spade'
                     }
                 ]
             },
