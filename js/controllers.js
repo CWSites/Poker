@@ -599,12 +599,9 @@ pokerApp.factory('playerStatus', function() {
 
         bestHand: function($scope){
             var players = $scope.livePlayers,
-            cards = $scope.cardNumbers,
             i = 0, x = 0, winnerPosition = 0, winnerId = 0;
 
             console.log("-- bestHand was called --");
-            console.log("cards on the board")
-            console.log($scope.table.cards);
 
             for(i=0; i < players.length; i++){
                 var playerInfo = {}, handCombined = [], handCombinedNum = [], handCombinedSuit = []
@@ -630,21 +627,32 @@ pokerApp.factory('playerStatus', function() {
                 $scope.playerHands.push(playerInfo);
             }
 
-            // determine what hands are available
+            // LOOP THROUGH THE PLAYERS
             for(i=0; i < players.length; i++){
-                hand = [], handComplete = 0, x = 0, cardNumbers = false, cardSuit = '', cardSuitsMatch = true;
+                var x = 0;
 
-                // loop through and set "times" to 0 for the card count.
-                while(x < cards.length && i != 0){
-                    $scope.cardNumbers[x].times = 0;
+                // loop through cards and set number of times it's found
+                while(x < 13){
+                    var cardFound = 0, z = 0;
+
+                    // loop through player hand
+                    while(z < 7){
+
+                        cardFound = $scope.playerHands[i].handCombinedNum[z].indexOf($scope.cardNumbers[x].cardNum);
+                        if(cardFound == 0){
+                            $scope.cardNumbers[x].times++;
+                        }
+
+                        z++;
+                    }
                     x++;
                 }
 
                 console.log("------------------------");
-                console.log($scope.playerHands[i]);
 
                 // ROYAL FLUSH
                 if($scope.playerHands[i].handValue < 10){
+                    var hand = [], handComplete = 0, cardNumbers = false, cardSuit = '', cardSuitsMatch = true;
 
                     // find card Num and assign to "hand" variable
                     hand.push($scope.playerHands[i].handCombinedNum.indexOf("A"));
@@ -652,8 +660,6 @@ pokerApp.factory('playerStatus', function() {
                     hand.push($scope.playerHands[i].handCombinedNum.indexOf("Q"));
                     hand.push($scope.playerHands[i].handCombinedNum.indexOf("J"));
                     hand.push($scope.playerHands[i].handCombinedNum.indexOf("10"));
-
-                    console.log(hand);
 
                     // all "numbers" found?
                     handComplete = hand.indexOf(-1);
@@ -686,78 +692,44 @@ pokerApp.factory('playerStatus', function() {
                             $scope.playerHands[i].handValue = 10;
                             $scope.playerHands[i].handName = "Royal Flush";
                         }
-
-                    // if cards in order but not suited then automatically set to a STRAIGHT
                     }
                 }
 
-                // STRAIGHT FLUSH
+                // STRAIGHT FLUSH, FLUSH, STRAIGHT
+                if($scope.playerHands[i].handValue < 10){
+                    var heart = 0, diamond = 0, spade = 0, club = 0, z = 0, x = 0, straight = false, flush = false;
 
-                // FOUR OF A KIND
-                if($scope.playerHands[i].handValue < 8){
-                    var hand = [], z = 0, x = 0, cardFound = 0, four = 0, set = 0, pair = 0;
+                    // loop through cards and find if 5 of them are in order
+                    while(x < 13 && straight == false){
 
-                    // loop through different cards
-                    while(x < 13){
-                        // reset after each card
-                        cardFound = 0, z = 0;
+                        // check for STRAIGHT, first card must be smaller than 10
+                        if(x < 9 && $scope.cardNumbers[x].times > 0){
 
-                        // loop through player hand
-                        while(z < 7){
-
-                            cardFound = $scope.playerHands[i].handCombinedNum[z].indexOf(cards[x].cardNum);
-                            if(cardFound == 0){
-                                $scope.cardNumbers[x].times++;
+                            // if the card that comes immediately after is found, check the four following to see if they are also found
+                            if($scope.cardNumbers[x+1].times > 0 && $scope.cardNumbers[x+2].times > 0 && $scope.cardNumbers[x+3].times > 0 && $scope.cardNumbers[x+4].times > 0){
+                                straight = true;
                             }
 
-                            z++;
+                        // check for STRAIGHT (A-5)
+                        } else if(x == 12 && $scope.cardNumbers[x].times > 0){
 
+                            if($scope.cardNumbers[0].times > 0 && $scope.cardNumbers[1].times > 0 && $scope.cardNumbers[2].times > 0 && $scope.cardNumbers[3].times > 0){
+                                straight = true;
+                            }
                         }
                         x++;
                     }
 
-                    z = 0;
+                    if(straight == true){
 
-                    // loop through 13, forget anything with value < 2
-                    // any of them more than 3? more than 2? more than 1?
-                    while(z < 13){
-                        if($scope.cardNumbers[z].times > 3){
-                            four++;
-                            $scope.playerHands[i].handValue = 8;
-                            $scope.playerHands[i].handName = "Four of a Kind";
-                        } else if($scope.cardNumbers[z].times > 2){
-                            set++;
-                            if(set < 2){
-                                $scope.playerHands[i].handValue = 4;
-                                $scope.playerHands[i].handName = "Three of a Kind";
-                            }
-                        } else if($scope.cardNumbers[z].times > 1){
-                            pair++;
-                            if(set == 1 && pair > 0){
-                                $scope.playerHands[i].handValue = 7;
-                                $scope.playerHands[i].handName = "Full House";
-                            } else if(pair > 1){
-                                $scope.playerHands[i].handValue = 3;
-                                $scope.playerHands[i].handName = "Two Pair";
-                            } else {
-                                $scope.playerHands[i].handValue = 2;
-                                $scope.playerHands[i].handName = "One Pair";
-                            }
-                        }
-                        z++;
+                        // logic to check if straight cards are same suit
+
+                        $scope.playerHands[i].handValue = 9;
+                        $scope.playerHands[i].handName = "Straight Flush";
                     }
 
-                    console.log("four of a kind: " + four + " set: " + set + " pair: " + pair);
-                }
-
-                // FULL HOUSE
-
-                // FLUSH
-                if($scope.playerHands[i].handValue < 6){
-                    var heart = 0, diamond = 0, spade = 0, club = 0, z = 0;
-
-                    // if numbers are good then compare suits
-                    while(z < 7 && cardSuitsMatch == true){
+                    // loop through and find how many times each suit is available
+                    while(z < 7){
 
                         $scope.playerHands[i].handCombinedSuit[z] == "heart" && heart++;
                         $scope.playerHands[i].handCombinedSuit[z] == "diamond" && diamond++;
@@ -767,19 +739,61 @@ pokerApp.factory('playerStatus', function() {
                         z++;
                     }
 
+                    // if any 5 cards have the same suit
                     if(heart > 4 || diamond > 4 || spade > 4 || club > 4){
                         $scope.playerHands[i].handValue = 6;
                         $scope.playerHands[i].handName = "Flush";
+                    } else if(straight == true){
+                        $scope.playerHands[i].handValue = 5;
+                        $scope.playerHands[i].handName = "Straight";
                     }
                 }
 
-                // STRAIGHT
-                // THREE OF A KIND
-                // TWO PAIRS
-                // ONE PAIR
+                // FOUR OF A KIND, FULL HOUSE, THREE OF A KIND, TWO PAIR, ONE PAIR
+                if($scope.playerHands[i].handValue < 8){
+                    var x = 0, four = 0, set = 0, pair = 0;
+
+                    // Loop through and find what cards are found more than once
+                    while(x < 13){
+                        if($scope.cardNumbers[x].times > 3 && $scope.playerHands[i].handValue < 8){
+                            four++;
+                            $scope.playerHands[i].handValue = 8;
+                            $scope.playerHands[i].handName = "Four of a Kind";
+                        } else if($scope.cardNumbers[x].times > 2 && $scope.playerHands[i].handValue < 4){
+                            set++;
+                            if(set < 2){
+                                $scope.playerHands[i].handValue = 4;
+                                $scope.playerHands[i].handName = "Three of a Kind";
+                            }
+                        } else if($scope.cardNumbers[x].times > 1 && $scope.playerHands[i].handValue < 3){
+                            pair++;
+                            if(pair > 1){
+                                $scope.playerHands[i].handValue = 3;
+                                $scope.playerHands[i].handName = "Two Pair";
+                            } else {
+                                $scope.playerHands[i].handValue = 2;
+                                $scope.playerHands[i].handName = "One Pair";
+                            }
+                        }
+                        if(set == 1 && pair > 0 && $scope.playerHands[i].handValue < 7){
+                            $scope.playerHands[i].handValue = 7;
+                            $scope.playerHands[i].handName = "Full House";
+                        }
+                        x++;
+                    }
+                }
+
                 // HIGH CARD
 
+                // reset card count to 0 for next player
+                x = 0;
+                while(x < $scope.cardNumbers.length){
+                    $scope.cardNumbers[x].times = 0;
+                    x++;
+                }
+
                 // for each player check
+                console.log($scope.playerHands[i]);
                 console.log("Player #" + i + " has a hand score of: " + $scope.playerHands[i].handValue);
             }
 
@@ -892,7 +906,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'cardSuit':'spade'
             },
             {
-                'cardNum':'9',
+                'cardNum':'Q',
                 'cardSuit':'heart'
             },
             {
@@ -904,7 +918,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'cardSuit':'club'
             },
             {
-                'cardNum':'Q',
+                'cardNum':'K',
                 'cardSuit':'spade'
             }
         ],
