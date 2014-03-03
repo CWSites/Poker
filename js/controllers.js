@@ -733,12 +733,15 @@ pokerApp.factory('playerStatus', function() {
                             }
                         } else if($scope.cardNumbers[z].times > 1){
                             pair++;
-                            if(pair < 2){
-                                $scope.playerHands[i].handValue = 2;
-                                $scope.playerHands[i].handName = "One Pair";
-                            } else {
+                            if(set == 1 && pair > 0){
+                                $scope.playerHands[i].handValue = 7;
+                                $scope.playerHands[i].handName = "Full House";
+                            } else if(pair > 1){
                                 $scope.playerHands[i].handValue = 3;
                                 $scope.playerHands[i].handName = "Two Pair";
+                            } else {
+                                $scope.playerHands[i].handValue = 2;
+                                $scope.playerHands[i].handName = "One Pair";
                             }
                         }
                         z++;
@@ -901,7 +904,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'cardSuit':'club'
             },
             {
-                'cardNum':'10',
+                'cardNum':'Q',
                 'cardSuit':'spade'
             }
         ],
