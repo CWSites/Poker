@@ -634,12 +634,10 @@ pokerApp.factory('playerStatus', function() {
             for(i=0; i < players.length; i++){
                 hand = [], handComplete = 0, x = 0, cardNumbers = false, cardSuit = '', cardSuitsMatch = true;
 
-                // TO-DO: For some reason the card times aren't being saved
                 // loop through and set "times" to 0 for the card count.
-                for(x=0; x < cards.length; x++){
-                    console.log("was set to: " + $scope.cardNumbers[x].times);
+                while(x < cards.length && i != 0){
                     $scope.cardNumbers[x].times = 0;
-                    console.log("now set to: " + $scope.cardNumbers[x].times);
+                    x++;
                 }
 
                 console.log("------------------------");
@@ -697,14 +695,13 @@ pokerApp.factory('playerStatus', function() {
 
                 // FOUR OF A KIND
                 if($scope.playerHands[i].handValue < 8){
-                    var hand = [], z = 0, cardFound = 0, totalFound = 0;
+                    var hand = [], z = 0, x = 0, cardFound = 0, four = 0, set = 0, pair = 0;
 
                     // loop through different cards
                     while(x < 13){
                         // reset after each card
-                        cardFound = 0, totalFound = 0, z = 0;
+                        cardFound = 0, z = 0;
 
-                        console.log("card: " + cards[x].cardNum);
                         // loop through player hand
                         while(z < 7){
 
@@ -716,20 +713,38 @@ pokerApp.factory('playerStatus', function() {
                             z++;
 
                         }
-                        console.log("card found " + $scope.cardNumbers[x].times + " times");
-                        x++
+                        x++;
                     }
 
-                    if(totalFound > 3){
-                        $scope.playerHands[i].handValue = 8;
-                        $scope.playerHands[i].handName = "Four of a Kind";
-                    } else if(totalFound > 2){
-                        $scope.playerHands[i].handValue = 4;
-                        $scope.playerHands[i].handName = "Three of a Kind";
-                    } else if(totalFound > 1){
-                        $scope.playerHands[i].handValue = 2;
-                        $scope.playerHands[i].handName = "One Pair";
+                    z = 0;
+
+                    // loop through 13, forget anything with value < 2
+                    // any of them more than 3? more than 2? more than 1?
+                    while(z < 13){
+                        if($scope.cardNumbers[z].times > 3){
+                            four++;
+                            $scope.playerHands[i].handValue = 8;
+                            $scope.playerHands[i].handName = "Four of a Kind";
+                        } else if($scope.cardNumbers[z].times > 2){
+                            set++;
+                            if(set < 2){
+                                $scope.playerHands[i].handValue = 4;
+                                $scope.playerHands[i].handName = "Three of a Kind";
+                            }
+                        } else if($scope.cardNumbers[z].times > 1){
+                            pair++;
+                            if(pair < 2){
+                                $scope.playerHands[i].handValue = 2;
+                                $scope.playerHands[i].handName = "One Pair";
+                            } else {
+                                $scope.playerHands[i].handValue = 3;
+                                $scope.playerHands[i].handName = "Two Pair";
+                            }
+                        }
+                        z++;
                     }
+
+                    console.log("four of a kind: " + four + " set: " + set + " pair: " + pair);
                 }
 
                 // FULL HOUSE
