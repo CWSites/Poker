@@ -665,9 +665,9 @@ pokerApp.factory('playerStatus', function() {
 
                             // if the card that comes immediately after is found, check the four following to see if they are also found
                             if($scope.cardNumbers[x+1].times > 0 && $scope.cardNumbers[x+2].times > 0 && $scope.cardNumbers[x+3].times > 0 && $scope.cardNumbers[x+4].times > 0){
-                                straight = true, s = 0;
+                                straight = true, s = x;
 
-                                // loops through and finds which card only has one suit available
+                                // loops through and finds which card only has one suit available starting with x
                                 while(s < 13 && cardSuit == ''){
                                     if($scope.cardNumbers[s].suits.length == 1){
                                         cardSuit = $scope.cardNumbers[s].suits[0];
@@ -681,7 +681,7 @@ pokerApp.factory('playerStatus', function() {
                                 cardSuitFour = $scope.cardNumbers[x+3].suits.indexOf(cardSuit);
                                 cardSuitFive = $scope.cardNumbers[x+4].suits.indexOf(cardSuit);
 
-                                if(cardSuitOne != -1 || cardSuitTwo != -1 || cardSuitThree != -1 || cardSuitFour != -1 || cardSuitFive != -1){
+                                if(cardSuitOne != -1 && cardSuitTwo != -1 && cardSuitThree != -1 && cardSuitFour != -1 && cardSuitFive != -1){
                                     $scope.playerHands[i].handValue = 10;
                                     $scope.playerHands[i].handName = "Royal Flush";
                                 }
@@ -757,7 +757,7 @@ pokerApp.factory('playerStatus', function() {
                     }
 
                     // if any 5 cards have the same suit
-                    if(straight == false && (heart > 4 || diamond > 4 || spade > 4 || club > 4)){
+                    if(heart > 4 || diamond > 4 || spade > 4 || club > 4){
                         $scope.playerHands[i].handValue = 6;
                         $scope.playerHands[i].handName = "Flush";
                     } else if(straight == true && $scope.playerHands[i].handValue < 6){
@@ -776,25 +776,24 @@ pokerApp.factory('playerStatus', function() {
                             four++;
                             $scope.playerHands[i].handValue = 8;
                             $scope.playerHands[i].handName = "Four of a Kind";
-                        } else if($scope.cardNumbers[x].times > 2 && $scope.playerHands[i].handValue < 4){
+                        } else if($scope.cardNumbers[x].times > 2){
                             set++;
-                            if(set < 2){
-                                $scope.playerHands[i].handValue = 4;
-                                $scope.playerHands[i].handName = "Three of a Kind";
-                            }
-                        } else if($scope.cardNumbers[x].times > 1 && $scope.playerHands[i].handValue < 3){
+                        } else if($scope.cardNumbers[x].times > 1){
                             pair++;
-                            if(pair > 1){
-                                $scope.playerHands[i].handValue = 3;
-                                $scope.playerHands[i].handName = "Two Pair";
-                            } else {
-                                $scope.playerHands[i].handValue = 2;
-                                $scope.playerHands[i].handName = "One Pair";
-                            }
                         }
-                        if(set == 1 && pair > 0 && $scope.playerHands[i].handValue < 7){
+
+                        if(set >= 1 && (pair >= 1 || set == 2) && $scope.playerHands[i].handValue < 7){
                             $scope.playerHands[i].handValue = 7;
                             $scope.playerHands[i].handName = "Full House";
+                        } else if($scope.playerHands[i].handValue < 4 && set > 2){
+                            $scope.playerHands[i].handValue = 4;
+                            $scope.playerHands[i].handName = "Three of a Kind";
+                        } else if($scope.playerHands[i].handValue < 3 && pair > 1){
+                            $scope.playerHands[i].handValue = 3;
+                            $scope.playerHands[i].handName = "Two Pair";
+                        } else if($scope.playerHands[i].handValue < 2 && pair == 1){
+                            $scope.playerHands[i].handValue = 2;
+                            $scope.playerHands[i].handName = "One Pair";
                         }
                         x++;
                     }
@@ -937,7 +936,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
         'cards': [
             {
                 'cardNum':'A',
-                'cardSuit':'spade'
+                'cardSuit':'club'
             },
             {
                 'cardNum':'Q',
