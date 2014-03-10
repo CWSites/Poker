@@ -657,7 +657,7 @@ pokerApp.factory('playerStatus', function() {
                     var heart = 0, diamond = 0, spade = 0, club = 0, z = 0, x = 0, s = 0, straight = false, flush = false;
 
                     // loop through cards and find if 5 of them are in order
-                    while(x < 13 && straight == false){
+                    while(x < 13){
 
                         // check for ROYAL FLUSH, (10-A)
                         if(x == 8 && $scope.cardNumbers[x].times > 0){
@@ -684,11 +684,12 @@ pokerApp.factory('playerStatus', function() {
                                 if(cardSuitOne != -1 && cardSuitTwo != -1 && cardSuitThree != -1 && cardSuitFour != -1 && cardSuitFive != -1){
                                     $scope.playerHands[i].handValue = 10;
                                     $scope.playerHands[i].handName = "Royal Flush";
+                                    console.log($scope.playerHands[i].handName);
                                 }
                             }
 
                         // check for STRAIGHT, first card must be smaller than 10
-                        } else if(x < 9 && $scope.cardNumbers[x].times > 0){
+                        } else if(x < 8 && $scope.cardNumbers[x].times > 0 && $scope.playerHands[i].handValue < 10){
                             var cardSuit = '', cardSuitOne = 0, cardSuitTwo = 0, cardSuitThree = 0, cardSuitFour = 0, cardSuitFive = 0;
 
                             // if the card that comes immediately after is found, check the four following to see if they are also found
@@ -709,14 +710,15 @@ pokerApp.factory('playerStatus', function() {
                                 cardSuitFour = $scope.cardNumbers[x+3].suits.indexOf(cardSuit);
                                 cardSuitFive = $scope.cardNumbers[x+4].suits.indexOf(cardSuit);
 
-                                if(cardSuitOne != -1 || cardSuitTwo != -1 || cardSuitThree != -1 || cardSuitFour != -1 || cardSuitFive != -1){
+                                if(cardSuitOne != -1 && cardSuitTwo != -1 && cardSuitThree != -1 && cardSuitFour != -1 && cardSuitFive != -1){
                                     $scope.playerHands[i].handValue = 9;
                                     $scope.playerHands[i].handName = "Straight Flush";
+                                    console.log($scope.playerHands[i].handName);
                                 }
                             }
 
                         // check for STRAIGHT (A-5)
-                        } else if(x == 12 && $scope.cardNumbers[x].times > 0){
+                        } else if(x == 12 && $scope.cardNumbers[x].times > 0 && $scope.playerHands[i].handValue < 10){
                             var cardSuit = '', cardSuitOne = 0, cardSuitTwo = 0, cardSuitThree = 0, cardSuitFour = 0, cardSuitFive = 0;
 
                             if($scope.cardNumbers[0].times > 0 && $scope.cardNumbers[1].times > 0 && $scope.cardNumbers[2].times > 0 && $scope.cardNumbers[3].times > 0){
@@ -736,9 +738,10 @@ pokerApp.factory('playerStatus', function() {
                                 cardSuitFour = $scope.cardNumbers[2].suits.indexOf(cardSuit);
                                 cardSuitFive = $scope.cardNumbers[3].suits.indexOf(cardSuit);
 
-                                if(cardSuitOne != -1 || cardSuitTwo != -1 || cardSuitThree != -1 || cardSuitFour != -1 || cardSuitFive != -1){
+                                if(cardSuitOne != -1 && cardSuitTwo != -1 && cardSuitThree != -1 && cardSuitFour != -1 && cardSuitFive != -1){
                                     $scope.playerHands[i].handValue = 9;
                                     $scope.playerHands[i].handName = "Straight Flush";
+                                    console.log($scope.playerHands[i].handName);
                                 }
                             }
                         }
@@ -757,12 +760,14 @@ pokerApp.factory('playerStatus', function() {
                     }
 
                     // if any 5 cards have the same suit
-                    if(heart > 4 || diamond > 4 || spade > 4 || club > 4){
+                    if((heart > 4 || diamond > 4 || spade > 4 || club > 4) && $scope.playerHands[i].handValue < 6){
                         $scope.playerHands[i].handValue = 6;
                         $scope.playerHands[i].handName = "Flush";
+                        console.log($scope.playerHands[i].handName);
                     } else if(straight == true && $scope.playerHands[i].handValue < 6){
                         $scope.playerHands[i].handValue = 5;
                         $scope.playerHands[i].handName = "Straight";
+                        console.log($scope.playerHands[i].handName);
                     }
                 }
 
@@ -776,6 +781,7 @@ pokerApp.factory('playerStatus', function() {
                             four++;
                             $scope.playerHands[i].handValue = 8;
                             $scope.playerHands[i].handName = "Four of a Kind";
+                            console.log($scope.playerHands[i].handName);
                         } else if($scope.cardNumbers[x].times > 2){
                             set++;
                         } else if($scope.cardNumbers[x].times > 1){
@@ -785,15 +791,19 @@ pokerApp.factory('playerStatus', function() {
                         if(set >= 1 && (pair >= 1 || set == 2) && $scope.playerHands[i].handValue < 7){
                             $scope.playerHands[i].handValue = 7;
                             $scope.playerHands[i].handName = "Full House";
-                        } else if($scope.playerHands[i].handValue < 4 && set > 2){
+                            console.log($scope.playerHands[i].handName);
+                        } else if($scope.playerHands[i].handValue < 4 && set > 0){
                             $scope.playerHands[i].handValue = 4;
                             $scope.playerHands[i].handName = "Three of a Kind";
+                            console.log($scope.playerHands[i].handName);
                         } else if($scope.playerHands[i].handValue < 3 && pair > 1){
                             $scope.playerHands[i].handValue = 3;
                             $scope.playerHands[i].handName = "Two Pair";
+                            console.log($scope.playerHands[i].handName);
                         } else if($scope.playerHands[i].handValue < 2 && pair == 1){
                             $scope.playerHands[i].handValue = 2;
                             $scope.playerHands[i].handName = "One Pair";
+                            console.log($scope.playerHands[i].handName);
                         }
                         x++;
                     }
@@ -935,8 +945,8 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
         'gameStatus': 0,
         'cards': [
             {
-                'cardNum':'A',
-                'cardSuit':'club'
+                'cardNum':'9',
+                'cardSuit':'spade'
             },
             {
                 'cardNum':'Q',
@@ -947,7 +957,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'cardSuit':'spade'
             },
             {
-                'cardNum':'8',
+                'cardNum':'J',
                 'cardSuit':'spade'
             },
             {
@@ -1001,7 +1011,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'J',
+                        'cardNum':'A',
                         'cardSuit':'spade'
                     },
                     {
@@ -1012,11 +1022,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             },
             {
                 'dead': false,
-                'playerId': 7734,
+                'playerId': 1984,
                 'rank': 2,
                 'name': 'Player Two',
                 'imageUrl': 'bootstrap/img/ichigo.jpg',
-                'chips': 0,
+                'chips': 200,
                 'button': false,
                 'blind': '',
                 'firstAct': false,
@@ -1028,11 +1038,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'J',
+                        'cardNum':'5',
                         'cardSuit':'diamond'
                     },
                     {
-                        'cardNum':'10',
+                        'cardNum':'6',
                         'cardSuit':'club'
                     }
                 ]
@@ -1055,7 +1065,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'2',
+                        'cardNum':'7',
                         'cardSuit':'diamond'
                     },
                     {
@@ -1082,11 +1092,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'7',
+                        'cardNum':'Q',
                         'cardSuit':'diamond'
                     },
                     {
-                        'cardNum':'A',
+                        'cardNum':'5',
                         'cardSuit':'club'
                     }
                 ]
@@ -1136,11 +1146,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'8',
+                        'cardNum':'10',
                         'cardSuit':'diamond'
                     },
                     {
-                        'cardNum':'9',
+                        'cardNum':'8',
                         'cardSuit':'club'
                     }
                 ]
@@ -1190,11 +1200,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'8',
+                        'cardNum':'Q',
                         'cardSuit':'club'
                     },
                     {
-                        'cardNum':'8',
+                        'cardNum':'Q',
                         'cardSuit':'spade'
                     }
                 ]
@@ -1218,11 +1228,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'hand': [
                     {
                         'cardNum':'J',
-                        'cardSuit':'club'
+                        'cardSuit':'spade'
                     },
                     {
-                        'cardNum':'J',
-                        'cardSuit':'heart'
+                        'cardNum':'10',
+                        'cardSuit':'spade'
                     }
                 ]
             }
