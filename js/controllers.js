@@ -761,12 +761,27 @@ pokerApp.factory('playerStatus', function() {
                     }
 
                     // if any 5 cards have the same suit
-                    if((heart > 4 || diamond > 4 || spade > 4 || club > 4) && $scope.playerHands[i].handValue < 6){
+                    if((heart == 5 || diamond == 5 || spade == 5 || club == 5) && $scope.playerHands[i].handValue < 6){
+                        var x = 12, flushSuit = "", highCardFound = false;
                         $scope.playerHands[i].handValue = 6;
                         $scope.playerHands[i].handName = "Flush";
                         console.log($scope.playerHands[i].handName);
 
-                        //TO-DO: Write logic to loop through flush cards and find highest card
+                        // figure out which suit is the flush
+                        heart == 5 ? flushSuit="heart":flushSuit="";
+                        diamond == 5 ? flushSuit="diamond":flushSuit="";
+                        spade == 5 ? flushSuit="spade":flushSuit="";
+                        club == 5 ? flushSuit="club":flushSuit="";
+
+                        while(x > 0 && highCardFound == false){
+                            if($scope.cardNumbers[x].times > 0 && ($scope.cardNumbers[x].suits.indexOf(flushSuit) != -1)){
+                                $scope.playerHands[i].highCard = x;
+                                highCardFound = true;
+                            }
+                            x--;
+                        }
+
+                        // TO-DO: Fix bug with high card being overwritten somewhere
 
                     } else if(straight == true && $scope.playerHands[i].handValue < 6){
                         $scope.playerHands[i].handValue = 5;
@@ -789,13 +804,14 @@ pokerApp.factory('playerStatus', function() {
                             console.log($scope.playerHands[i].handName);
                         } else if($scope.cardNumbers[x].times > 2){
                             set++;
-                            $scope.playerHands[i].highCard = x;
-                        } else if($scope.cardNumbers[x].times > 1){
+                            if(set > 1 && $scope.playerHands[i].handValue < 7){
+                                $scope.playerHands[i].highCard = x;
+                            } else if($scope.playerHands[i].handValue < 6){
+                                $scope.playerHands[i].highCard = x;
+                            }
+                        } else if($scope.cardNumbers[x].times > 1 && $scope.playerHands[i].handValue < 3){
                             pair++;
                             $scope.playerHands[i].highCard = x;
-                        } else if($scope.cardNumbers[x].times > 0){
-                            $scope.playerHands[i].highCard = x;
-                            $scope.playerHands[i].handValue = 1;
                         }
 
                         if(set >= 1 && (pair >= 1 || set == 2) && $scope.playerHands[i].handValue < 7){
@@ -975,7 +991,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
             },
             {
                 'cardNum':'3',
-                'cardSuit':'club'
+                'cardSuit':'spade'
             }
         ],
         'seats': [
