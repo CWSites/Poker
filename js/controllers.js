@@ -742,8 +742,6 @@ pokerApp.factory('playerStatus', function() {
                         console.log(playerHands[i].handName);
                         console.log('High Card: ' + playerHands[i].highCard);
 
-                        // TO-DO: Fix bug with high card being overwritten somewhere
-
                     } else if(straight == true && playerHands[i].handValue < 6){
                         $scope.playerHands[i].handValue=5;
                         $scope.playerHands[i].handName='Straight';
@@ -752,7 +750,7 @@ pokerApp.factory('playerStatus', function() {
                     }
                 }
 
-                // FOUR OF A KIND, FULL HOUSE, THREE OF A KIND, TWO PAIR, ONE PAIR
+                // FOUR OF A KIND, FULL HOUSE, THREE OF A KIND, TWO PAIR, ONE PAIR, HIGH CARD
                 if(playerHands[i].handValue < 8){
                     var x=0, four=0, set=0, pair=0;
 
@@ -775,8 +773,14 @@ pokerApp.factory('playerStatus', function() {
                         } else if(cardNumbers[x].times > 1 && playerHands[i].handValue < 3){
                             pair++;
                             $scope.playerHands[i].highCard=x;
-                        } else if(cardNumbers[x].times > 0 && playerHands[i].handValue == 0){
-                            $scope.playerHands[i].highCard=x;
+                        } else if(cardNumbers[x].times == 1){
+
+                            // ADD TO KICKER ARRAY
+                            $scope.playerHands[i].kicker.push(x);
+
+                            if(playerHands[i].handValue == 0){
+                                $scope.playerHands[i].highCard=x;
+                            }
                         }
 
                         if(set >= 1 && (pair >= 1 || set == 2) && playerHands[i].handValue < 7){
@@ -822,6 +826,8 @@ pokerApp.factory('playerStatus', function() {
                 // for each player check
                 console.log(playerHands[i]);
                 console.log('Player #' + i + ' has a hand score of: ' + playerHands[i].handValue);
+                console.log("KICKERS");
+                console.log($scope.playerHands[i].kicker);
             }
 
             // loop through player hands and set player ID of the winner
