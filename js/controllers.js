@@ -599,7 +599,7 @@ pokerApp.factory('playerStatus', function() {
 
         handStrength: function($scope){
             var players=$scope.livePlayers, cardNumbers=$scope.cardNumbers, playerHands=$scope.playerHands,
-            i=0, x=0, winnerPosition=0, winnerId=0;
+            i=0, x=0, w=0, winnerId=0;
 
             console.log("-- handStrength was called --");
 
@@ -631,7 +631,7 @@ pokerApp.factory('playerStatus', function() {
 
             // LOOP THROUGH THE PLAYERS
             for(i=0; i < players.length; i++){
-                var x=0, cardSuit='';
+                var x=0, cardSuit='', curPlayer=playerHands[i];
 
                 // loop through cards and set number of times it's found
                 while(x < 13){
@@ -640,8 +640,8 @@ pokerApp.factory('playerStatus', function() {
                     // loop through player hand
                     while(z < 7){
 
-                        cardFound=playerHands[i].handCombinedNum[z].indexOf(cardNumbers[x].cardNum);
-                        cardSuit=playerHands[i].handCombinedSuit[z];
+                        cardFound=curPlayer.handCombinedNum[z].indexOf(cardNumbers[x].cardNum);
+                        cardSuit=curPlayer.handCombinedSuit[z];
                         if(cardFound == 0){
                             $scope.cardNumbers[x].times++;
                             $scope.cardNumbers[x].suits.push(cardSuit);
@@ -655,15 +655,15 @@ pokerApp.factory('playerStatus', function() {
                 console.log("------------------------");
 
                 // ROYAL FLUSH, STRAIGHT FLUSH, FLUSH, STRAIGHT
-                if(playerHands[i].handValue <= 10){
+                if(curPlayer.handValue <= 10){
                     var heart=0, diamond=0, spade=0, club=0, z=0, x=0, straight=false, flushSuit='';
 
                     // loop through and find how many times each suit is available
                     while(z < 7){
-                        playerHands[i].handCombinedSuit[z] == 'heart' && heart++;
-                        playerHands[i].handCombinedSuit[z] == 'diamond' && diamond++;
-                        playerHands[i].handCombinedSuit[z] == 'spade' && spade++;
-                        playerHands[i].handCombinedSuit[z] == 'club' && club++;
+                        curPlayer.handCombinedSuit[z] == 'heart' && heart++;
+                        curPlayer.handCombinedSuit[z] == 'diamond' && diamond++;
+                        curPlayer.handCombinedSuit[z] == 'spade' && spade++;
+                        curPlayer.handCombinedSuit[z] == 'club' && club++;
                         z++;
                     }
 
@@ -688,13 +688,11 @@ pokerApp.factory('playerStatus', function() {
                                 if((cardNumbers[x].suits.indexOf(flushSuit) != -1) && (cardNumbers[x+1].suits.indexOf(flushSuit) != -1) && (cardNumbers[x+2].suits.indexOf(flushSuit) != -1) && (cardNumbers[x+3].suits.indexOf(flushSuit) != -1) && (cardNumbers[x+4].suits.indexOf(flushSuit) != -1)){
                                     $scope.playerHands[i].handValue=10;
                                     $scope.playerHands[i].handName='Royal Flush';
-                                    console.log(playerHands[i].handName);
-                                    console.log('High Card: ' + playerHands[i].highCard);
                                 }
                             }
 
                         // check for STRAIGHT, first card must be smaller than 10
-                        } else if(x < 8 && cardNumbers[x].times > 0 && playerHands[i].handValue < 10){
+                        } else if(x < 8 && cardNumbers[x].times > 0 && curPlayer.handValue < 10){
 
                             // if the card that comes immediately after is found, check the four following to see if they are also found
                             if(cardNumbers[x+1].times > 0 && cardNumbers[x+2].times > 0 && cardNumbers[x+3].times > 0 && cardNumbers[x+4].times > 0){
@@ -703,13 +701,11 @@ pokerApp.factory('playerStatus', function() {
                                 if((cardNumbers[x].suits.indexOf(flushSuit) != -1) && (cardNumbers[x+1].suits.indexOf(flushSuit) != -1) && (cardNumbers[x+2].suits.indexOf(flushSuit) != -1) && (cardNumbers[x+3].suits.indexOf(flushSuit) != -1) && (cardNumbers[x+4].suits.indexOf(flushSuit) != -1)){
                                     $scope.playerHands[i].handValue=9;
                                     $scope.playerHands[i].handName='Straight Flush';
-                                    console.log(playerHands[i].handName);
-                                    console.log('High Card: ' + playerHands[i].highCard);
                                 }
                             }
 
                         // check for STRAIGHT (A-5)
-                        } else if(x == 12 && cardNumbers[x].times > 0 && playerHands[i].handValue < 10){
+                        } else if(x == 12 && cardNumbers[x].times > 0 && curPlayer.handValue < 10){
 
                             if(cardNumbers[0].times > 0 && cardNumbers[1].times > 0 && cardNumbers[2].times > 0 && cardNumbers[3].times > 0){
                                 straight=true, $scope.playerHands[i].highCard=3;
@@ -717,8 +713,6 @@ pokerApp.factory('playerStatus', function() {
                                 if((cardNumbers[0].suits.indexOf(flushSuit) != -1) && (cardNumbers[1].suits.indexOf(flushSuit) != -1) && (cardNumbers[2].suits.indexOf(flushSuit) != -1) && (cardNumbers[3].suits.indexOf(flushSuit) != -1) && (cardNumbers[12].suits.indexOf(flushSuit) != -1)){
                                     $scope.playerHands[i].handValue=9;
                                     $scope.playerHands[i].handName='Straight Flush';
-                                    console.log(playerHands[i].handName);
-                                    console.log('High Card: ' + playerHands[i].highCard);
                                 }
                             }
                         }
@@ -726,7 +720,7 @@ pokerApp.factory('playerStatus', function() {
                     }
 
                     // if any 5 cards have the same suit
-                    if(flushSuit != '' && playerHands[i].handValue < 6){
+                    if(flushSuit != '' && curPlayer.handValue < 6){
                         var x=12, highCardFound=false;
                         $scope.playerHands[i].handValue=6;
                         $scope.playerHands[i].handName='Flush';
@@ -739,38 +733,31 @@ pokerApp.factory('playerStatus', function() {
                             x--;
                         }
 
-                        console.log(playerHands[i].handName);
-                        console.log('High Card: ' + playerHands[i].highCard);
-
-                    } else if(straight == true && playerHands[i].handValue < 6){
+                    } else if(straight == true && curPlayer.handValue < 6){
                         $scope.playerHands[i].handValue=5;
                         $scope.playerHands[i].handName='Straight';
-                        console.log(playerHands[i].handName);
-                        console.log('High Card: ' + playerHands[i].highCard);
                     }
                 }
 
                 // FOUR OF A KIND, FULL HOUSE, THREE OF A KIND, TWO PAIR, ONE PAIR, HIGH CARD
-                if(playerHands[i].handValue < 8){
+                if(curPlayer.handValue < 8){
                     var x=0, four=0, set=0, pair=0;
 
                     // Loop through and find what cards are found more than once
                     while(x < 13){
-                        if(cardNumbers[x].times > 3 && playerHands[i].handValue < 8){
+                        if(cardNumbers[x].times > 3 && curPlayer.handValue < 8){
                             four++;
                             $scope.playerHands[i].handValue=8;
                             $scope.playerHands[i].handName='Four of a Kind';
                             $scope.playerHands[i].highCard=x;
-                            console.log(playerHands[i].handName);
-                            console.log('High Card: ' + playerHands[i].highCard);
                         } else if(cardNumbers[x].times > 2){
                             set++;
-                            if(set > 1 && playerHands[i].handValue < 7){
+                            if(set > 1 && curPlayer.handValue < 7){
                                 $scope.playerHands[i].highCard=x;
-                            } else if(playerHands[i].handValue < 6){
+                            } else if(curPlayer.handValue < 6){
                                 $scope.playerHands[i].highCard=x;
                             }
-                        } else if(cardNumbers[x].times > 1 && playerHands[i].handValue < 3){
+                        } else if(cardNumbers[x].times > 1 && curPlayer.handValue < 3){
                             pair++;
                             $scope.playerHands[i].highCard=x;
                         } else if(cardNumbers[x].times == 1){
@@ -778,41 +765,31 @@ pokerApp.factory('playerStatus', function() {
                             // ADD TO KICKER ARRAY
                             $scope.playerHands[i].kicker.push(x);
 
-                            if(playerHands[i].handValue == 0){
+                            if(curPlayer.handValue == 0){
                                 $scope.playerHands[i].highCard=x;
                             }
                         }
 
-                        if(set >= 1 && (pair >= 1 || set == 2) && playerHands[i].handValue < 7){
+                        if(set >= 1 && (pair >= 1 || set == 2) && curPlayer.handValue < 7){
                             $scope.playerHands[i].handValue=7;
                             $scope.playerHands[i].handName='Full House';
-                            console.log(playerHands[i].handName);
-                            console.log('High Card: ' + playerHands[i].highCard);
-                        } else if($scope.playerHands[i].handValue < 4 && set > 0){
+                        } else if(curPlayer.handValue < 4 && set > 0){
                             $scope.playerHands[i].handValue=4;
                             $scope.playerHands[i].handName='Three of a Kind';
-                            console.log(playerHands[i].handName);
-                            console.log('High Card: ' + playerHands[i].highCard);
-                        } else if($scope.playerHands[i].handValue < 3 && pair > 1){
+                        } else if(curPlayer.handValue < 3 && pair > 1){
                             $scope.playerHands[i].handValue=3;
                             $scope.playerHands[i].handName='Two Pair';
-                            console.log(playerHands[i].handName);
-                            console.log('High Card: ' + playerHands[i].highCard);
-                        } else if($scope.playerHands[i].handValue < 2 && pair == 1){
+                        } else if(curPlayer.handValue < 2 && pair == 1){
                             $scope.playerHands[i].handValue=2;
                             $scope.playerHands[i].handName='One Pair';
-                            console.log(playerHands[i].handName);
-                            console.log('High Card: ' + playerHands[i].highCard);
                         }
                         x++;
                     }
                 }
 
-                if(playerHands[i].handValue==0){
+                if(curPlayer.handValue==0){
                     $scope.playerHands[i].handValue=1;
                     $scope.playerHands[i].handName='High Card';
-                    console.log(playerHands[i].handName);
-                    console.log('High Card: ' + playerHands[i].highCard);
                 }
 
                 // reset card count to 0 for next player
@@ -824,31 +801,104 @@ pokerApp.factory('playerStatus', function() {
                 }
 
                 // for each player check
-                console.log(playerHands[i]);
-                console.log('Player #' + i + ' has a hand score of: ' + playerHands[i].handValue);
+                console.log(curPlayer);
                 console.log("KICKERS");
-                console.log($scope.playerHands[i].kicker);
+                console.log(curPlayer.kicker);
             }
 
             // loop through player hands and set player ID of the winner
             for(i=0; i < $scope.playerHands.length; i++){
 
                 if(i == 0){
-                    winnerPosition=i;
+                    w=i;
                     winnerId=playerHands[i].playerId;
-                } else if(playerHands[i].handValue > playerHands[winnerPosition].handValue){
-                    winnerPosition=i;
+                } else if(playerHands[i].handValue > playerHands[w].handValue){
+                    w=i;
                     winnerId=playerHands[i].playerId;
-                } else if(playerHands[i].handValue == playerHands[winnerPosition].handValue){
-                    console.log('Player #' + i + ' ties with Player #' + winnerPosition + ' with a score of: ' + playerHands[i].handValue);
-                    console.log('Player #' + i + ' has a high card: ' + playerHands[i].highCard + ' current winner (Player #' + winnerPosition + ') has a high card: ' + playerHands[winnerPosition].highCard);
+                } else if(playerHands[i].handValue == playerHands[w].handValue){
 
-                    if(playerHands[i].highCard > playerHands[winnerPosition].highCard){
-                        winnerPosition=i;
+                    if(playerHands[i].highCard > playerHands[w].highCard){
+                        w=i;
                         winnerId=playerHands[i].playerId;
-                    } else if(playerHands[i].highCard == playerHands[winnerPosition].highCard){
-                        // TO-DO: Write logic for split pot
-                        // If tie then each person wins pot/number of players tied
+                    } else if(playerHands[i].highCard == playerHands[w].highCard){
+                        var curKickLength = playerHands[i].kicker.length, winKickLength = playerHands[w].kicker.length;
+
+                        // If Kicker isn't allowed
+                        if(playerHands[i].handValue == 10 || playerHands[i].handValue == 9 || playerHands[i].handValue == 7 || playerHands[i].handValue == 6 || playerHands[i].handValue == 5){
+
+                            // TO-DO: Write logic for split pot
+                            // If tie then each person wins pot/number of players tied
+
+                        // 1 Kicker Allowed
+                        } else if(playerHands[i].handValue == 8 || playerHands[i].handValue == 3){
+                            console.log("1 KICKER ALLOWED");
+
+                            if(playerHands[i].kicker[curKickLength-1] > playerHands[w].kicker[winKickLength-1]){
+                                w=i;
+                                winnerId=playerHands[i].playerId;
+                            } else if(playerHands[i].kicker[curKickLength-1] == playerHands[w].kicker[winKickLength-1]){
+                                console.log("Kickers are the same");
+                                // TO-DO: add player to split pot
+                            }
+
+                        // 2 Kickers Allowed
+                        } else if(playerHands[i].handValue == 4){
+                            console.log("2 KICKERS ALLOWED");
+
+                            if(playerHands[i].kicker[curKickLength-1] > playerHands[w].kicker[winKickLength-1]){
+                                w=i;
+                                winnerId=playerHands[i].playerId;
+                            } else if(playerHands[i].kicker[curKickLength-2] > playerHands[w].kicker[winKickLength-2]){
+                                w=i;
+                                winnerId=playerHands[i].playerId;
+                            } else if(playerHands[i].kicker[curKickLength-2] == playerHands[w].kicker[winKickLength-2]){
+                                console.log("2nd kicker is the same");
+                                // TO-DO: add player to split pot
+                            }
+
+                        // 3 Kickers Allowed
+                        } else if(playerHands[i].handValue == 2){
+                            console.log("3 KICKERS ALLOWED");
+
+                            if(playerHands[i].kicker[curKickLength-1] > playerHands[w].kicker[winKickLength-1]){
+                                w=i;
+                                winnerId=playerHands[i].playerId;
+                            } else if(playerHands[i].kicker[curKickLength-2] > playerHands[w].kicker[winKickLength-2]){
+                                w=i;
+                                winnerId=playerHands[i].playerId;
+                            } else if(playerHands[i].kicker[curKickLength-3] > playerHands[w].kicker[winKickLength-3]){
+                                w=i;
+                                winnerId=playerHands[i].playerId;
+                            } else if(playerHands[i].kicker[curKickLength-3] == playerHands[w].kicker[winKickLength-3]){
+                                console.log("3rd kicker is the same");
+                                // TO-DO: add player to split pot
+                            }
+
+                        // 5 Kickers Allowed
+                        } else {
+                            console.log("5 KICKERS ALLOWED");
+
+                            if(playerHands[i].kicker[curKickLength-1] > playerHands[w].kicker[winKickLength-1]){
+                                w=i;
+                                winnerId=playerHands[i].playerId;
+                            } else if(playerHands[i].kicker[curKickLength-2] > playerHands[w].kicker[winKickLength-2]){
+                                w=i;
+                                winnerId=playerHands[i].playerId;
+                            } else if(playerHands[i].kicker[curKickLength-3] > playerHands[w].kicker[winKickLength-3]){
+                                w=i;
+                                winnerId=playerHands[i].playerId;
+                            } else if(playerHands[i].kicker[curKickLength-4] > playerHands[w].kicker[winKickLength-4]){
+                                w=i;
+                                winnerId=playerHands[i].playerId;
+                            } else if(playerHands[i].kicker[curKickLength-5] > playerHands[w].kicker[winKickLength-5]){
+                                w=i;
+                                winnerId=playerHands[i].playerId;
+                            } else if(playerHands[i].kicker[curKickLength-5] == playerHands[w].kicker[winKickLength-5]){
+                                console.log("2nd kicker is the same");
+                                // TO-DO: add player to split pot
+                            }
+
+                        }
                     }
 
                     //TO-DO: Write logic if playing board then kicker || split
@@ -865,7 +915,7 @@ pokerApp.factory('playerStatus', function() {
                 }
             }
 
-            console.log('Winner Position: ' + winnerPosition);
+            console.log('Winner Position: ' + w);
             console.log('Winner ID: ' + winnerId);
 
             return;
@@ -955,19 +1005,19 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
         'gameStatus': 0,
         'cards': [
             {
-                'cardNum':'3',
+                'cardNum':'A',
                 'cardSuit':'spade'
             },
             {
-                'cardNum':'Q',
+                'cardNum':'10',
                 'cardSuit':'club'
             },
             {
-                'cardNum':'5',
+                'cardNum':'4',
                 'cardSuit':'spade'
             },
             {
-                'cardNum':'2',
+                'cardNum':'A',
                 'cardSuit':'diamond'
             },
             {
@@ -994,11 +1044,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'9',
+                        'cardNum':'A',
                         'cardSuit':'heart'
                     },
                     {
-                        'cardNum':'10',
+                        'cardNum':'K',
                         'cardSuit':'diamond'
                     }
                 ]
@@ -1021,11 +1071,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'A',
+                        'cardNum':'K',
                         'cardSuit':'spade'
                     },
                     {
-                        'cardNum':'10',
+                        'cardNum':'A',
                         'cardSuit':'spade'
                     }
                 ]
@@ -1106,7 +1156,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                         'cardSuit':'diamond'
                     },
                     {
-                        'cardNum':'J',
+                        'cardNum':'2',
                         'cardSuit':'club'
                     }
                 ]
@@ -1214,7 +1264,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                         'cardSuit':'club'
                     },
                     {
-                        'cardNum':'10',
+                        'cardNum':'4',
                         'cardSuit':'spade'
                     }
                 ]
@@ -1241,7 +1291,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                         'cardSuit':'club'
                     },
                     {
-                        'cardNum':'10',
+                        'cardNum':'3',
                         'cardSuit':'club'
                     }
                 ]
