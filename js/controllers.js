@@ -619,6 +619,7 @@ pokerApp.factory('playerStatus', function() {
                     'playerId': players[i].playerId,
                     'handValue': 0,
                     'highCard': 0,
+                    'kicker': [],
                     'handName': '',
                     'handCombinedNum': handCombinedNum,
                     'handCombinedSuit': handCombinedSuit
@@ -774,6 +775,8 @@ pokerApp.factory('playerStatus', function() {
                         } else if(cardNumbers[x].times > 1 && playerHands[i].handValue < 3){
                             pair++;
                             $scope.playerHands[i].highCard=x;
+                        } else if(cardNumbers[x].times > 0 && playerHands[i].handValue == 0){
+                            $scope.playerHands[i].highCard=x;
                         }
 
                         if(set >= 1 && (pair >= 1 || set == 2) && playerHands[i].handValue < 7){
@@ -799,6 +802,13 @@ pokerApp.factory('playerStatus', function() {
                         }
                         x++;
                     }
+                }
+
+                if(playerHands[i].handValue==0){
+                    $scope.playerHands[i].handValue=1;
+                    $scope.playerHands[i].handName='High Card';
+                    console.log(playerHands[i].handName);
+                    console.log('High Card: ' + playerHands[i].highCard);
                 }
 
                 // reset card count to 0 for next player
@@ -830,7 +840,6 @@ pokerApp.factory('playerStatus', function() {
                     if(playerHands[i].highCard > playerHands[winnerPosition].highCard){
                         winnerPosition=i;
                         winnerId=playerHands[i].playerId;
-                    // Split pot
                     } else if(playerHands[i].highCard == playerHands[winnerPosition].highCard){
                         // TO-DO: Write logic for split pot
                         // If tie then each person wins pot/number of players tied
@@ -940,23 +949,23 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
         'gameStatus': 0,
         'cards': [
             {
-                'cardNum':'9',
+                'cardNum':'3',
                 'cardSuit':'spade'
             },
             {
-                'cardNum':'10',
+                'cardNum':'Q',
+                'cardSuit':'club'
+            },
+            {
+                'cardNum':'5',
                 'cardSuit':'spade'
             },
             {
-                'cardNum':'J',
-                'cardSuit':'spade'
-            },
-            {
-                'cardNum':'7',
+                'cardNum':'2',
                 'cardSuit':'diamond'
             },
             {
-                'cardNum':'3',
+                'cardNum':'7',
                 'cardSuit':'heart'
             }
         ],
@@ -983,7 +992,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                         'cardSuit':'heart'
                     },
                     {
-                        'cardNum':'9',
+                        'cardNum':'10',
                         'cardSuit':'diamond'
                     }
                 ]
@@ -1006,11 +1015,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'8',
+                        'cardNum':'A',
                         'cardSuit':'spade'
                     },
                     {
-                        'cardNum':'7',
+                        'cardNum':'10',
                         'cardSuit':'spade'
                     }
                 ]
@@ -1033,7 +1042,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'5',
+                        'cardNum':'K',
                         'cardSuit':'diamond'
                     },
                     {
@@ -1060,11 +1069,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'7',
+                        'cardNum':'6',
                         'cardSuit':'diamond'
                     },
                     {
-                        'cardNum':'7',
+                        'cardNum':'J',
                         'cardSuit':'club'
                     }
                 ]
@@ -1087,11 +1096,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'Q',
+                        'cardNum':'8',
                         'cardSuit':'diamond'
                     },
                     {
-                        'cardNum':'5',
+                        'cardNum':'J',
                         'cardSuit':'club'
                     }
                 ]
@@ -1172,7 +1181,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                         'cardSuit':'spade'
                     },
                     {
-                        'cardNum':'3',
+                        'cardNum':'J',
                         'cardSuit':'spade'
                     }
                 ]
@@ -1195,11 +1204,11 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'bet': '',
                 'hand': [
                     {
-                        'cardNum':'Q',
+                        'cardNum':'K',
                         'cardSuit':'club'
                     },
                     {
-                        'cardNum':'Q',
+                        'cardNum':'10',
                         'cardSuit':'spade'
                     }
                 ]
