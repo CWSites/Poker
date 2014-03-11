@@ -599,7 +599,7 @@ pokerApp.factory('playerStatus', function() {
 
         handStrength: function($scope){
             var players=$scope.livePlayers, cardNumbers=$scope.cardNumbers, playerHands=$scope.playerHands,
-            i=0, x=0, w=0, winnerId=0;
+            i=0, x=0, w=0, winnerIds=[];
 
             console.log("-- handStrength was called --");
 
@@ -810,113 +810,101 @@ pokerApp.factory('playerStatus', function() {
             for(i=0; i < $scope.playerHands.length; i++){
 
                 if(i == 0){
-                    w=i;
-                    winnerId=playerHands[i].playerId;
+                    w=i, winnerIds=[playerHands[i].playerId];
                 } else if(playerHands[i].handValue > playerHands[w].handValue){
-                    w=i;
-                    winnerId=playerHands[i].playerId;
+                    w=i, winnerIds=[playerHands[i].playerId];
                 } else if(playerHands[i].handValue == playerHands[w].handValue){
 
                     if(playerHands[i].highCard > playerHands[w].highCard){
-                        w=i;
-                        winnerId=playerHands[i].playerId;
+                        w=i, winnerIds=[playerHands[i].playerId];
                     } else if(playerHands[i].highCard == playerHands[w].highCard){
-                        var curKickLength = playerHands[i].kicker.length, winKickLength = playerHands[w].kicker.length;
+                        var curKick = playerHands[i].kicker, winKick = playerHands[w].kicker;
 
                         // If Kicker isn't allowed
                         if(playerHands[i].handValue == 10 || playerHands[i].handValue == 9 || playerHands[i].handValue == 7 || playerHands[i].handValue == 6 || playerHands[i].handValue == 5){
 
-                            // TO-DO: Write logic for split pot
-                            // If tie then each person wins pot/number of players tied
+                            for(i=0; i < players.length; i++){
+                                 winnerIds.push(playerHands[i].playerId);
+                            }
 
                         // 1 Kicker Allowed
                         } else if(playerHands[i].handValue == 8 || playerHands[i].handValue == 3){
                             console.log("1 KICKER ALLOWED");
 
-                            if(playerHands[i].kicker[curKickLength-1] > playerHands[w].kicker[winKickLength-1]){
-                                w=i;
-                                winnerId=playerHands[i].playerId;
-                            } else if(playerHands[i].kicker[curKickLength-1] == playerHands[w].kicker[winKickLength-1]){
+                            if(curKick[curKick.length-1] > winKick[winKick.length-1]){
+                                w=i, winnerIds=[playerHands[i].playerId];
+                            } else if(curKick[curKick.length-1] == winKick[winKick.length-1]){
                                 console.log("Kickers are the same");
-                                // TO-DO: add player to split pot
+                                winnerIds.push(playerHands[i].playerId);
                             }
 
                         // 2 Kickers Allowed
                         } else if(playerHands[i].handValue == 4){
                             console.log("2 KICKERS ALLOWED");
 
-                            if(playerHands[i].kicker[curKickLength-1] > playerHands[w].kicker[winKickLength-1]){
-                                w=i;
-                                winnerId=playerHands[i].playerId;
-                            } else if(playerHands[i].kicker[curKickLength-2] > playerHands[w].kicker[winKickLength-2]){
-                                w=i;
-                                winnerId=playerHands[i].playerId;
-                            } else if(playerHands[i].kicker[curKickLength-2] == playerHands[w].kicker[winKickLength-2]){
+                            if(curKick[curKick.length-1] > winKick[winKick.length-1]){
+                                w=i, winnerIds=[playerHands[i].playerId];
+                            } else if(curKick[curKick.length-2] > winKick[winKick.length-2]){
+                                w=i, winnerIds=[playerHands[i].playerId];
+                            } else if(curKick[curKick.length-2] == winKick[winKick.length-2]){
                                 console.log("2nd kicker is the same");
-                                // TO-DO: add player to split pot
+                                winnerIds.push(playerHands[i].playerId);
                             }
 
                         // 3 Kickers Allowed
                         } else if(playerHands[i].handValue == 2){
                             console.log("3 KICKERS ALLOWED");
 
-                            if(playerHands[i].kicker[curKickLength-1] > playerHands[w].kicker[winKickLength-1]){
-                                w=i;
-                                winnerId=playerHands[i].playerId;
-                            } else if(playerHands[i].kicker[curKickLength-2] > playerHands[w].kicker[winKickLength-2]){
-                                w=i;
-                                winnerId=playerHands[i].playerId;
-                            } else if(playerHands[i].kicker[curKickLength-3] > playerHands[w].kicker[winKickLength-3]){
-                                w=i;
-                                winnerId=playerHands[i].playerId;
-                            } else if(playerHands[i].kicker[curKickLength-3] == playerHands[w].kicker[winKickLength-3]){
+                            if(curKick[curKick.length-1] > winKick[winKick.length-1]){
+                                w=i, winnerIds=[playerHands[i].playerId];
+                            } else if(curKick[curKick.length-2] > winKick[winKick.length-2]){
+                                w=i, winnerIds=[playerHands[i].playerId];
+                            } else if(curKick[curKick.length-3] > winKick[winKick.length-3]){
+                                w=i, winnerIds=[playerHands[i].playerId];
+                            } else if(curKick[curKick.length-3] == winKick[winKick.length-3]){
                                 console.log("3rd kicker is the same");
-                                // TO-DO: add player to split pot
+                                winnerIds.push(playerHands[i].playerId);
                             }
 
                         // 5 Kickers Allowed
                         } else {
                             console.log("5 KICKERS ALLOWED");
 
-                            if(playerHands[i].kicker[curKickLength-1] > playerHands[w].kicker[winKickLength-1]){
-                                w=i;
-                                winnerId=playerHands[i].playerId;
-                            } else if(playerHands[i].kicker[curKickLength-2] > playerHands[w].kicker[winKickLength-2]){
-                                w=i;
-                                winnerId=playerHands[i].playerId;
-                            } else if(playerHands[i].kicker[curKickLength-3] > playerHands[w].kicker[winKickLength-3]){
-                                w=i;
-                                winnerId=playerHands[i].playerId;
-                            } else if(playerHands[i].kicker[curKickLength-4] > playerHands[w].kicker[winKickLength-4]){
-                                w=i;
-                                winnerId=playerHands[i].playerId;
-                            } else if(playerHands[i].kicker[curKickLength-5] > playerHands[w].kicker[winKickLength-5]){
-                                w=i;
-                                winnerId=playerHands[i].playerId;
-                            } else if(playerHands[i].kicker[curKickLength-5] == playerHands[w].kicker[winKickLength-5]){
-                                console.log("2nd kicker is the same");
-                                // TO-DO: add player to split pot
+                            if(curKick[curKick.length-1] > winKick[winKick.length-1]){
+                                w=i, winnerIds=[playerHands[i].playerId];
+                            } else if(curKick[curKick.length-2] > winKick[winKick.length-2]){
+                                w=i, winnerIds=[playerHands[i].playerId];
+                            } else if(curKick[curKick.length-3] > winKick[winKick.length-3]){
+                                w=i, winnerIds=[playerHands[i].playerId];
+                            } else if(curKick[curKick.length-4] > winKick[winKick.length-4]){
+                                w=i, winnerIds=[playerHands[i].playerId];
+                            } else if(curKick[curKick.length-5] > winKick[winKick.length-5]){
+                                w=i, winnerIds=[playerHands[i].playerId];
+                            } else if(curKick[curKick.length-5] == winKick[winKick.length-5]){
+                                console.log("5th kicker is the same");
+                                winnerIds.push(playerHands[i].playerId);
                             }
-
                         }
                     }
-
-                    //TO-DO: Write logic if playing board then kicker || split
                 }
             }
+
+            console.log("------------------------");
 
             for(i=0; i < players.length; i++){
-                if(winnerId == players[i].playerId){
-
-                    // assign winner && reward chips
+                if(winnerIds.indexOf(players[i].playerId) != -1){
                     $scope.livePlayers[i].winner=true;
-                    $scope.livePlayers[i].chips += $scope.table.pot;
-                    $scope.alert=players[i].name + ' wins the hand with a ' + playerHands[i].handName + '!';
+                    if(winnerIds.length == 1){
+                        $scope.livePlayers[i].chips += $scope.table.pot;
+                        $scope.alert=players[i].name + ' wins the hand with a ' + playerHands[i].handName + '!';
+                    } else if(winnerIds.length > 1){
+                        $scope.livePlayers[i].chips += ($scope.table.pot / winnerIds.length);
+                        $scope.alert='Players split the pot with ' + playerHands[i].handName + '!';
+                    }
                 }
             }
 
-            console.log('Winner Position: ' + w);
-            console.log('Winner ID: ' + winnerId);
+            console.log('Winner ID(s): ' + winnerIds);
 
             return;
         }
