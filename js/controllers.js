@@ -18,13 +18,12 @@ pokerApp.factory('playerStatus', function() {
             $scope.winner={}
             $scope.livePlayers=[];
 
-            console.log("-- resetTable was called --");
-
             // reset all players
             for(i=0; $scope.table.seats.length > i; i++){
                 $scope.table.seats[i].fold=false;
                 $scope.table.seats[i].turn=false;
                 $scope.table.seats[i].winner=false;
+                $scope.table.seats[i].hand=[];
                 $scope.alert='';
             }
 
@@ -33,6 +32,7 @@ pokerApp.factory('playerStatus', function() {
                 gameInfo.setLivePlayers($scope);
                 gameInfo.moveButtonBlinds($scope);
                 gameInfo.setButtonBlinds($scope);
+                gameInfo.dealCards($scope);
                 gameInfo.findFirstLastPlayer($scope);
             } else {
                 // TEST: make sure this alert displays
@@ -161,6 +161,58 @@ pokerApp.factory('playerStatus', function() {
             }
 
             $scope.table.currentBet=bigBlind;
+        },
+
+        dealCards: function($scope){
+            var cards=$scope.cardNumbers, deck=$scope.deck, cardSuit='', card={};
+            $scope.table.cards=[];
+            $scope.table.burnCards=[];
+
+            // DELETE WHEN DONE TESTING
+            for(i=0; $scope.table.seats.length > i; i++){
+                $scope.table.seats[i].hand=[];
+            }
+
+            // loop through suit assignment
+            for(s=0; s<4; s++){
+                switch(s){
+                    case 0:
+                        cardSuit='spade';
+                        break;
+                    case 1:
+                        cardSuit='club';
+                        break;
+                    case 2:
+                        cardSuit='heart';
+                        break;
+                    case 3:
+                        cardSuit='diamond';
+                        break;
+                }
+
+                // loop through card number assignment
+                for(i=0; i<cards.length; i++){
+                    card={
+                        'cardNum': cards[i].cardNum,
+                        'cardSuit': cardSuit
+                    }
+
+                    // add card object to the deck array
+                    deck.push(card);
+                }
+            }
+
+            // shuffle the deck - Randomize array element order in-place. Using Fisher-Yates shuffle algorithm.
+            for(var i=deck.length-1; i > 0; i--){
+                var j=Math.floor(Math.random() * (i + 1));
+                var temp=deck[i];
+                deck[i]=deck[j];
+                deck[j]=temp;
+            }
+
+            // deal the cards to the players
+
+            console.log(deck);
         },
 
         // find first to act, or first live player after button
@@ -808,6 +860,20 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
         'countdown': 3,
         'smallBlind': 25,
         'gameStatus': 0,
+        'burnCards': [
+            {
+                'cardNum':'5',
+                'cardSuit':'club'
+            },
+            {
+                'cardNum':'10',
+                'cardSuit':'diamond'
+            },
+            {
+                'cardNum':'5',
+                'cardSuit':'heart'
+            },
+        ],
         'cards': [
             {
                 'cardNum':'A',
@@ -1114,6 +1180,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
     $scope.winner={}
     $scope.livePlayers=[];
     $scope.playerHands=[];
+    $scope.deck=[];
     $scope.myBet=$scope.table.seats[$scope.myPosition].bet;
 
     // TO TEST HAND STRENGTH, CARDS DEALT COMMENT THE FOLLOWING
@@ -1122,6 +1189,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
 
     // TO TEST HAND STRENGTH, CARDS DEALT UNCOMMENT THE FOLLOWING
     // ----------------------------------------------------------
+    status.dealCards($scope);
     status.setLivePlayers($scope);
     status.handStrength($scope);
 
