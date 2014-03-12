@@ -57,7 +57,9 @@
 			<p class="lead">The <a href="rules.html">rules</a> are simple, No Limit Texas Hold'em</p>
 
 			<!-- myTurn folded playerBet playerRaise -->
-			<div class="pokerRoom" ng-class="{preFlop:table.gameStatus==0, final:table.gameStatus==4}">
+		    <!-- TO TEST HAND STRENGTH, CARDS DEALT ADD CLASS 'final' TO 'pokerRoom' -->
+		    <!-- =================================================================== -->
+			<div class="pokerRoom final" ng-class="{preFlop:table.gameStatus==0, final:table.gameStatus==4}">
 				<div class="alert alert-warning" ng-class="{active:table.seats[myPosition].turn==true || alert != ''}">
 					<div ng-class="{active:alert != ''}">
 						{{alert}}
@@ -70,7 +72,9 @@
 				</div>
 
 				<div class="pokerTable center-block">
-					<ol class="pokerCards center-block list-unstyled"
+				    <!-- TO TEST HAND STRENGTH, CARDS DEALT ADD CLASS 'final' TO 'pokerCards' -->
+				    <!-- =================================================================== -->
+					<ol class="pokerCards center-block list-unstyled final"
 						ng-class="{myTurn:table.seats[myPosition].turn==true,
 							cardPreFlop:table.gameStatus==0,
 							cardFlop:table.gameStatus==1,
