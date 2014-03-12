@@ -164,9 +164,10 @@ pokerApp.factory('playerStatus', function() {
         },
 
         dealCards: function($scope){
-            var cards=$scope.cardNumbers, deck=$scope.deck, cardSuit='', card={};
             $scope.table.cards=[];
             $scope.table.burnCards=[];
+            $scope.deck=[];
+            var cards=$scope.cardNumbers, players=$scope.livePlayers, deck=$scope.deck, cardSuit='', card={}, i=0, smallFound=false, arrayPos=0;
 
             // DELETE WHEN DONE TESTING
             for(i=0; $scope.table.seats.length > i; i++){
@@ -210,7 +211,30 @@ pokerApp.factory('playerStatus', function() {
                 deck[j]=temp;
             }
 
+            i=0;
             // deal the cards to the players
+            while(i < players.length && smallFound == false){
+                card={};
+
+                if (players[i].blind == "small"){
+                    smallFound=true;
+                    players[i].dead == false ? x=i : x=i+1;
+                    arrayPos=x;
+
+                    // loop through players 2x to deal cards
+                    for(x=0; x < players.length*2; x++){
+
+                        // if at end of players array, loop to begining
+                        if(arrayPos == players.length){
+                            arrayPos=0;
+                        }
+
+                        $scope.livePlayers[arrayPos].hand.push(deck.shift(0,1));
+                        arrayPos++;
+                    }
+                }
+                i++;
+            }
 
             console.log(deck);
         },
@@ -913,16 +937,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'turn': false,
                 'currentBet': 0,
                 'bet': '',
-                'hand': [
-                    {
-                        'cardNum':'Q',
-                        'cardSuit':'heart'
-                    },
-                    {
-                        'cardNum':'K',
-                        'cardSuit':'diamond'
-                    }
-                ]
+                'hand': []
             },
             {
                 'dead': false,
@@ -940,16 +955,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'turn': false,
                 'currentBet': 0,
                 'bet': '',
-                'hand': [
-                    {
-                        'cardNum':'7',
-                        'cardSuit':'spade'
-                    },
-                    {
-                        'cardNum':'A',
-                        'cardSuit':'spade'
-                    }
-                ]
+                'hand': []
             },
             {
                 'dead': false,
@@ -967,16 +973,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'turn': false,
                 'currentBet': 0,
                 'bet': '',
-                'hand': [
-                    {
-                        'cardNum':'K',
-                        'cardSuit':'diamond'
-                    },
-                    {
-                        'cardNum':'6',
-                        'cardSuit':'club'
-                    }
-                ]
+                'hand': []
             },
             {
                 'dead': false,
@@ -994,16 +991,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'turn': false,
                 'currentBet': 0,
                 'bet': '',
-                'hand': [
-                    {
-                        'cardNum':'6',
-                        'cardSuit':'diamond'
-                    },
-                    {
-                        'cardNum':'J',
-                        'cardSuit':'club'
-                    }
-                ]
+                'hand': []
             },
             {
                 'dead': false,
@@ -1021,16 +1009,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'turn': false,
                 'currentBet': 0,
                 'bet': '',
-                'hand': [
-                    {
-                        'cardNum':'8',
-                        'cardSuit':'diamond'
-                    },
-                    {
-                        'cardNum':'2',
-                        'cardSuit':'club'
-                    }
-                ]
+                'hand': []
             },
             {
                 'dead': false,
@@ -1048,16 +1027,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'turn': false,
                 'currentBet': 0,
                 'bet': '',
-                'hand': [
-                    {
-                        'cardNum':'5',
-                        'cardSuit':'club'
-                    },
-                    {
-                        'cardNum':'6',
-                        'cardSuit':'club'
-                    }
-                ]
+                'hand': []
             },
             {
                 'dead': false,
@@ -1075,16 +1045,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'turn': false,
                 'currentBet': 0,
                 'bet': '',
-                'hand': [
-                    {
-                        'cardNum':'K',
-                        'cardSuit':'diamond'
-                    },
-                    {
-                        'cardNum':'8',
-                        'cardSuit':'club'
-                    }
-                ]
+                'hand': []
             },
             {
                 'dead': false,
@@ -1102,16 +1063,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'turn': false,
                 'currentBet': 0,
                 'bet': '',
-                'hand': [
-                    {
-                        'cardNum':'K',
-                        'cardSuit':'spade'
-                    },
-                    {
-                        'cardNum':'J',
-                        'cardSuit':'spade'
-                    }
-                ]
+                'hand': []
             },
             {
                 'dead': false,
@@ -1129,16 +1081,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'turn': false,
                 'currentBet': 0,
                 'bet': '',
-                'hand': [
-                    {
-                        'cardNum':'K',
-                        'cardSuit':'club'
-                    },
-                    {
-                        'cardNum':'4',
-                        'cardSuit':'spade'
-                    }
-                ]
+                'hand': []
             },
             {
                 'dead': false,
@@ -1156,16 +1099,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'turn': false,
                 'currentBet': 0,
                 'bet': '',
-                'hand': [
-                    {
-                        'cardNum':'9',
-                        'cardSuit':'club'
-                    },
-                    {
-                        'cardNum':'3',
-                        'cardSuit':'club'
-                    }
-                ]
+                'hand': []
             }
         ]
     }
@@ -1189,8 +1123,8 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
 
     // TO TEST HAND STRENGTH, CARDS DEALT UNCOMMENT THE FOLLOWING
     // ----------------------------------------------------------
-    status.dealCards($scope);
     status.setLivePlayers($scope);
-    status.handStrength($scope);
+    status.dealCards($scope);
+    // status.handStrength($scope);
 
 }]);
