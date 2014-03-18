@@ -704,14 +704,20 @@ pokerApp.factory('playerStatus', function() {
                         } else if(cardNumbers[x].times == 3){
                             set++;
                             $scope.playerHands[i].highCard=x;
+                            if(set ==2){
+                                $scope.playerHands[i].kicker.push(x);
+                            }
                         } else if(cardNumbers[x].times == 2){
                             pair++;
                             fullHouseKicker.push(x);
+                            if(pair == 3){
+                                $scope.playerHands[i].kicker.push(x);
+                            }
                             if($scope.playerHands[i].handValue < 4){
                                 $scope.playerHands[i].highCard=x;
                             }
-                        } else if(cardNumbers[x].times == 1 && $scope.playerHands[i].handValue == 0){
-                            $scope.playerHands[i].highCard=x;
+                        } else if(cardNumbers[x].times == 1){
+                            $scope.playerHands[i].kicker.push(x);
                         }
 
                         if(((set >= 1 && pair >= 1) || set == 2) && $scope.playerHands[i].handValue < 7){
@@ -727,24 +733,12 @@ pokerApp.factory('playerStatus', function() {
                         } else if($scope.playerHands[i].handValue < 2 && pair == 1){
                             $scope.playerHands[i].handValue=2;
                             $scope.playerHands[i].handName='One Pair';
-                        }
-
-                        // ASSIGN KICKER(S)
-                        if(cardNumbers[x].times == 1){
-                            $scope.playerHands[i].kicker.push(x);
-                        // If 2 sets, then the lesser of the 2 is the kicker
-                        } else if(cardNumbers[x].times == 3 && set == 2){
-                            $scope.playerHands[i].kicker.push(x);
-                        // If 3 pairs, then the lesser of the 3 is the kicker
-                        } else if(cardNumbers[x].times == 2 && pair == 3){
-                            $scope.playerHands[i].kicker.push(x);
+                        } else if(cardNumbers[x].times == 1 && $scope.playerHands[i].handValue == 0){
+                            $scope.playerHands[i].highCard=x;
+                            $scope.playerHands[i].handValue=1;
+                            $scope.playerHands[i].handName='High Card';
                         }
                     }
-                }
-
-                if($scope.playerHands[i].handValue==0){
-                    $scope.playerHands[i].handValue=1;
-                    $scope.playerHands[i].handName='High Card';
                 }
 
                 // reset card count to 0 for next player
@@ -782,6 +776,19 @@ pokerApp.factory('playerStatus', function() {
                                 if(curKick[curKick.length-1] > winKick[winKick.length-1]){
                                     w=i, winnerIds=[playerHands[i].playerId];
                                 } else if(curKick[curKick.length-1] == winKick[winKick.length-1]){
+                                    winnerIds.push(playerHands[i].playerId);
+                                }
+                                break;
+                            case 6: // 4 Kickers allowed
+                                if(curKick[curKick.length-1] > winKick[winKick.length-1]){
+                                    w=i, winnerIds=[playerHands[i].playerId];
+                                } else if(curKick[curKick.length-2] > winKick[winKick.length-2]){
+                                    w=i, winnerIds=[playerHands[i].playerId];
+                                } else if(curKick[curKick.length-3] > winKick[winKick.length-3]){
+                                    w=i, winnerIds=[playerHands[i].playerId];
+                                } else if(curKick[curKick.length-4] > winKick[winKick.length-4]){
+                                    w=i, winnerIds=[playerHands[i].playerId];
+                                } else if(curKick[curKick.length-4] == winKick[winKick.length-4]){
                                     winnerIds.push(playerHands[i].playerId);
                                 }
                                 break;
@@ -827,17 +834,14 @@ pokerApp.factory('playerStatus', function() {
                                     winnerIds.push(playerHands[i].playerId);
                                 }
                                 break;
-                            default:
-                                for(i=0; i < players.length; i++){
-                                     winnerIds.push(playerHands[i].playerId);
-                                }
+                            default: // 0 Kickers allowed
+                                winnerIds.push(playerHands[i].playerId);
                                 break;
                         }
                     }
                 }
             }
 
-            // BUG: If split pot then setting all players to winner. need to compare best hand value
             for(i=0; i < players.length; i++){
                 if(winnerIds.indexOf(players[i].playerId) != -1){
                     $scope.livePlayers[i].winner=true;
@@ -1035,7 +1039,7 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
                 'rank': 6,
                 'name': 'Player Five',
                 'imageUrl': 'bootstrap/img/ichigo.jpg',
-                'chips': 0,
+                'chips': 100,
                 'button': false,
                 'blind': '',
                 'firstAct': false,
