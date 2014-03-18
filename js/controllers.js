@@ -691,7 +691,7 @@ pokerApp.factory('playerStatus', function() {
 
                 // FOUR OF A KIND, FULL HOUSE, THREE OF A KIND, TWO PAIR, ONE PAIR, HIGH CARD
                 if($scope.playerHands[i].handValue < 8){
-                    var four=0, set=0, pair=0, fullHouseKicker=[];
+                    var four=0, set=0, pair=0, fullHouseKicker=[], pairKicker=[];
 
                     // Loop through and find what cards are found more than once
                     for(x=0; x < 13; x++){
@@ -709,10 +709,7 @@ pokerApp.factory('playerStatus', function() {
                             }
                         } else if(cardNumbers[x].times == 2){
                             pair++;
-                            fullHouseKicker.push(x);
-                            if(pair == 3){
-                                $scope.playerHands[i].kicker.push(x);
-                            }
+                            pairKicker.push(x);
                             if($scope.playerHands[i].handValue < 4){
                                 $scope.playerHands[i].highCard=x;
                             }
@@ -730,6 +727,7 @@ pokerApp.factory('playerStatus', function() {
                         } else if($scope.playerHands[i].handValue < 3 && pair >= 2){
                             $scope.playerHands[i].handValue=3;
                             $scope.playerHands[i].handName='Two Pair';
+                            $scope.playerHands[i].kicker=pairKicker.slice(1);
                         } else if($scope.playerHands[i].handValue < 2 && pair == 1){
                             $scope.playerHands[i].handValue=2;
                             $scope.playerHands[i].handName='One Pair';
@@ -801,10 +799,12 @@ pokerApp.factory('playerStatus', function() {
                                     winnerIds.push(playerHands[i].playerId);
                                 }
                                 break;
-                            case 3: // 1 Kicker allowed
+                            case 3: // 2 Kicker allowed
                                 if(curKick[curKick.length-1] > winKick[winKick.length-1]){
                                     w=i, winnerIds=[playerHands[i].playerId];
-                                } else if(curKick[curKick.length-1] == winKick[winKick.length-1]){
+                                } else if(curKick[curKick.length-2] > winKick[winKick.length-2]){
+                                    w=i, winnerIds=[playerHands[i].playerId];
+                                } else if(curKick[curKick.length-2] == winKick[winKick.length-2]){
                                     winnerIds.push(playerHands[i].playerId);
                                 }
                                 break;
