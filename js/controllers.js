@@ -167,7 +167,9 @@ pokerApp.factory('playerStatus', function() {
         dealCards: function($scope){
             $scope.table.cards=[];
             $scope.table.burnCards=[];
-            $scope.playerHands=[]; // remove when done testing
+            // TO TEST HAND STRENGTH, CARDS DEALT COMMENT $scope.playerHands=[];
+            // --------------------------------------------------------
+            // $scope.playerHands=[];
             $scope.deck=[];
             var cards=$scope.cardNumbers, players=$scope.livePlayers, deck=$scope.deck, cardSuit='', card={}, i=0, smallFound=false, arrayPos=0;
 
@@ -319,36 +321,36 @@ pokerApp.factory('playerStatus', function() {
 
             // TO TEST HAND STRENGTH, CARDS DEALT UNCOMMENT THE FOLLOWING
             // ----------------------------------------------------------
-            $scope.table.burnCards.push($scope.deck.shift(0,1));
-            $scope.table.cards.push($scope.deck.shift(0,1));
-            $scope.table.cards.push($scope.deck.shift(0,1));
-            $scope.table.cards.push($scope.deck.shift(0,1));
-            $scope.table.burnCards.push($scope.deck.shift(0,1));
-            $scope.table.cards.push($scope.deck.shift(0,1));
-            $scope.table.burnCards.push($scope.deck.shift(0,1));
-            $scope.table.cards.push($scope.deck.shift(0,1));
+            // $scope.table.burnCards.push($scope.deck.shift(0,1));
+            // $scope.table.cards.push($scope.deck.shift(0,1));
+            // $scope.table.cards.push($scope.deck.shift(0,1));
+            // $scope.table.cards.push($scope.deck.shift(0,1));
+            // $scope.table.burnCards.push($scope.deck.shift(0,1));
+            // $scope.table.cards.push($scope.deck.shift(0,1));
+            // $scope.table.burnCards.push($scope.deck.shift(0,1));
+            // $scope.table.cards.push($scope.deck.shift(0,1));
 
             // TO TEST HAND STRENGTH, CARDS DEALT COMMENT THE FOLLOWING
             // --------------------------------------------------------
-            // switch($scope.table.gameStatus){
-            //     case 1:
-            //         // burn 1 turn 3
-            //         $scope.table.burnCards.push($scope.deck.shift(0,1));
-            //         $scope.table.cards.push($scope.deck.shift(0,1));
-            //         $scope.table.cards.push($scope.deck.shift(0,1));
-            //         $scope.table.cards.push($scope.deck.shift(0,1));
-            //         break;
-            //     case 2:
-            //         // burn 1 turn 1
-            //         $scope.table.burnCards.push($scope.deck.shift(0,1));
-            //         $scope.table.cards.push($scope.deck.shift(0,1));
-            //         break;
-            //     case 3:
-            //         // burn 1 turn 1
-            //         $scope.table.burnCards.push($scope.deck.shift(0,1));
-            //         $scope.table.cards.push($scope.deck.shift(0,1));
-            //         break;
-            // }
+            switch($scope.table.gameStatus){
+                case 1:
+                    // burn 1 turn 3
+                    $scope.table.burnCards.push($scope.deck.shift(0,1));
+                    $scope.table.cards.push($scope.deck.shift(0,1));
+                    $scope.table.cards.push($scope.deck.shift(0,1));
+                    $scope.table.cards.push($scope.deck.shift(0,1));
+                    break;
+                case 2:
+                    // burn 1 turn 1
+                    $scope.table.burnCards.push($scope.deck.shift(0,1));
+                    $scope.table.cards.push($scope.deck.shift(0,1));
+                    break;
+                case 3:
+                    // burn 1 turn 1
+                    $scope.table.burnCards.push($scope.deck.shift(0,1));
+                    $scope.table.cards.push($scope.deck.shift(0,1));
+                    break;
+            }
         },
 
         // game timer
@@ -532,7 +534,7 @@ pokerApp.factory('playerStatus', function() {
                         $scope.livePlayers[i].chips += $scope.table.pot;
                         $scope.table.pot=0;
                         $scope.winner=players[i];
-                        $scope.alert=players[i].name + " wins this hand! 3 seconds until the next hand.";
+                        $scope.alert=players[i].name + " wins this hand! 5 seconds until the next hand.";
                         $scope.$apply();
                     }
                     i++;
@@ -544,12 +546,12 @@ pokerApp.factory('playerStatus', function() {
                 $scope.$apply();
             }
 
-            // 3 second timeout until next game
+            // 5 second timeout until next game
             setTimeout(function(){
                 $scope.table.gameStatus=0;
                 gameInfo.resetTable($scope);
                 return;
-            }, 1000000);
+            }, 5000);
         },
 
         handStrength: function($scope){
@@ -936,8 +938,8 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
     $scope.table={
         'pot': 0,
         'currentBet': 0,
-        'timer': 2,
-        'countdown': 2,
+        'timer': 5,
+        'countdown': 5,
         'smallBlind': 25,
         'gameStatus': 0,
         'burnCards': [],
@@ -1141,13 +1143,13 @@ pokerApp.controller('PlayerListCtrl', ['$scope','playerStatus', function($scope,
 
     // TO TEST HAND STRENGTH, CARDS DEALT COMMENT THE FOLLOWING
     // --------------------------------------------------------
-    // status.resetTable($scope);
+    status.resetTable($scope);
 
     // TO TEST HAND STRENGTH, CARDS DEALT UNCOMMENT THE FOLLOWING
     // ----------------------------------------------------------
-    status.setLivePlayers($scope);
-    status.dealCards($scope);
-    status.burnTurn($scope);
-    status.findWinner($scope);
+    // status.setLivePlayers($scope);
+    // status.dealCards($scope);
+    // status.burnTurn($scope);
+    // status.findWinner($scope);
 
 }]);

@@ -55,11 +55,13 @@
 		<div class="starter-template">
 			<h1>Let's Play!</h1>
 			<p class="lead">The <a href="rules.html">rules</a> are simple, No Limit Texas Hold'em</p>
+			<p>The game is on a 5 second timer per player. In order to see a flop at least one person (you) need to call.</p>
+			<p><strong>Note:</strong> Still a little buggy but a work in progress.</p>
 
 			<!-- myTurn folded playerBet playerRaise -->
 		    <!-- TO TEST HAND STRENGTH, CARDS DEALT ADD CLASS 'final' TO 'pokerRoom' -->
 		    <!-- =================================================================== -->
-			<div class="pokerRoom final" ng-class="{preFlop:table.gameStatus==0, final:table.gameStatus==4}">
+			<div class="pokerRoom" ng-class="{preFlop:table.gameStatus==0, final:table.gameStatus==4}">
 				<div class="alert alert-warning" ng-class="{active:table.seats[myPosition].turn==true || alert != ''}">
 					<div ng-class="{active:alert != ''}">
 						{{alert}}
@@ -74,7 +76,7 @@
 				<div class="pokerTable center-block">
 				    <!-- TO TEST HAND STRENGTH, CARDS DEALT ADD CLASS 'final' TO 'pokerCards' -->
 				    <!-- =================================================================== -->
-					<ol class="pokerCards center-block list-unstyled final"
+					<ol class="pokerCards center-block list-unstyled"
 						ng-class="{myTurn:table.seats[myPosition].turn==true,
 							cardPreFlop:table.gameStatus==0,
 							cardFlop:table.gameStatus==1,
